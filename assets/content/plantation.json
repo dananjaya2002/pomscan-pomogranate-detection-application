@@ -1,0 +1,94 @@
+[
+  {
+    "id": "site_selection",
+    "title": "Site Selection",
+    "icon": "📍",
+    "description": "Pomegranate thrives in hot, dry tropical and subtropical climates. Choose sites with full sun exposure (at least 6 hours daily) and good air circulation to minimise fungal disease pressure.",
+    "tips": [
+      "Optimal temperature range: 25–38°C during growing season",
+      "Can tolerate light frost but young plants need protection below 5°C",
+      "Altitude up to 1,800 m above sea level is suitable",
+      "Avoid frost pockets and low-lying areas prone to waterlogging"
+    ]
+  },
+  {
+    "id": "soil_preparation",
+    "title": "Soil Preparation",
+    "icon": "🌍",
+    "description": "Pomegranate is highly adaptable but performs best in well-drained, loamy soil with a slightly acidic to neutral pH. Heavy clay and waterlogged soils must be avoided.",
+    "tips": [
+      "Ideal pH range: 5.5–7.0",
+      "Prepare pits 60 cm × 60 cm × 60 cm at least 30 days before planting",
+      "Mix excavated soil with 20 kg FYM (Farm Yard Manure), 1 kg Single Super Phosphate, 0.5 kg Muriate of Potash per pit",
+      "Apply Trichoderma viride 50 g per pit to suppress soil-borne pathogens",
+      "In heavy clay soil, add river sand (1:1 ratio) to improve drainage"
+    ]
+  },
+  {
+    "id": "variety_selection",
+    "title": "Variety Selection",
+    "icon": "🌿",
+    "description": "Choosing the right variety is critical for market success. Popular commercial varieties differ in fruit colour, taste, seed softness, and disease resistance.",
+    "tips": [
+      "Bhagwa (Arakta): Deep red, soft seeds, high yield — most popular commercial variety",
+      "Wonderful: Dark red, tart-sweet flavour, suited for cooler climates",
+      "Mridula: Early bearing, deep red arils, good shelf life",
+      "Phule Bhagwa: Improved Bhagwa with higher disease tolerance",
+      "Sinduri: Suitable for drier regions, medium-sized fruits"
+    ]
+  },
+  {
+    "id": "planting",
+    "title": "Planting & Spacing",
+    "icon": "🌱",
+    "description": "Correct spacing ensures adequate sunlight, air movement, and ease of intercultural operations. Pomegranate can be trained as a single-stemmed tree or multi-stemmed bush.",
+    "tips": [
+      "Standard spacing: 4.5 m × 3.0 m (740 plants/hectare)",
+      "High-density spacing: 3 m × 2 m (1,666 plants/hectare) — requires pruning management",
+      "Best planting time: July–August (monsoon onset) or February–March",
+      "Plant grafted/ budded seedlings rather than seedlings for uniformity",
+      "Irrigate immediately after planting and keep soil moist for 2–3 weeks"
+    ]
+  },
+  {
+    "id": "irrigation",
+    "title": "Irrigation Management",
+    "icon": "💧",
+    "description": "Pomegranate is drought-tolerant once established but requires regular irrigation for commercial fruit production. Drip irrigation is highly recommended for water use efficiency.",
+    "tips": [
+      "Install drip irrigation: 2 drip emitters per plant at 0.2–0.5 m from trunk",
+      "Young plants (0–2 years): irrigate every 3–4 days",
+      "Bearing trees: 4–6 litres/plant/day during dry season",
+      "Withhold irrigation for 2–3 months to induce flowering (stress method)",
+      "Resume irrigation after pruning to trigger bud break and flowering",
+      "Avoid water stress during fruit development — causes fruit cracking"
+    ]
+  },
+  {
+    "id": "fertilisation",
+    "title": "Fertilisation Schedule",
+    "icon": "🧪",
+    "description": "Balanced nutrition is key to high yield and fruit quality. Split fertiliser application reduces nutrient loss and improves uptake efficiency.",
+    "tips": [
+      "Year 1: 10 kg FYM + 300:100:200 g N:P:K per plant per year",
+      "Bearing trees: 50 kg FYM + 625:375:250 g N:P:K per plant per year",
+      "Apply nitrogen in 3 splits: at pruning, fruit set, and fruit development",
+      "Micronutrient spray (Zinc sulphate 0.5% + Boric acid 0.1%) twice a year",
+      "Magnesium sulphate 0.5% foliar spray improves fruit colour and quality"
+    ]
+  },
+  {
+    "id": "pruning",
+    "title": "Pruning & Training",
+    "icon": "✂️",
+    "description": "Pruning regulates crop load, improves fruit quality, and controls plant size. For commercial orchards, single-stem or 3-stem training is recommended to maximise production.",
+    "tips": [
+      "Train to single trunk or keep 3–4 primary branches",
+      "Remove suckers emerging from base regularly",
+      "Annual pruning after each crop harvest",
+      "Prune out dead, diseased, crossing, and weak branches",
+      "Deblossoming during first 2 years helps establish strong framework",
+      "Summer pruning (October–November in India) promotes concentrated flowering"
+    ]
+  }
+]

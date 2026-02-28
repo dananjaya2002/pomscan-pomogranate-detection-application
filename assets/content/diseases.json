@@ -1,0 +1,72 @@
+[
+  {
+    "id": "cercospora_blight",
+    "name": "Cercospora Blight",
+    "severity": "High",
+    "cause": "Fungal pathogen Cercospora punicae",
+    "symptoms": "Small circular brown spots with yellow halos on leaves. Infected leaves turn yellow and drop prematurely. Lesions may appear on fruit skin causing surface blemishes.",
+    "treatment": "Apply copper-based fungicide (Copper Oxychloride 0.3%). Remove and destroy infected plant debris. Improve canopy ventilation by pruning. Spray Mancozeb 0.25% at 15-day intervals during humid seasons.",
+    "prevention": "Maintain proper plant spacing. Avoid overhead irrigation. Apply preventive fungicide sprays before monsoon season.",
+    "icon": "🍂"
+  },
+  {
+    "id": "fruit_rot",
+    "name": "Fruit Rot (Alternaria)",
+    "severity": "Very High",
+    "cause": "Fungal pathogen Alternaria alternata",
+    "symptoms": "Dark brown to black lesions on fruit surface starting at the calyx end. Internal fruit tissue turns dark and mushy. White or grey fungal growth visible in humid conditions.",
+    "treatment": "Remove and destroy infected fruits immediately. Apply Carbendazim 0.1% or Thiophanate-methyl 0.05% fungicide. Post-harvest treatment with hot water (52°C for 2 minutes) reduces spread.",
+    "prevention": "Harvest fruits at proper maturity. Avoid mechanical injury during harvesting. Store in cool, dry conditions.",
+    "icon": "🍎"
+  },
+  {
+    "id": "bacterial_blight",
+    "name": "Bacterial Blight",
+    "severity": "High",
+    "cause": "Bacterium Xanthomonas axonopodis pv. punicae",
+    "symptoms": "Water-soaked angular leaf spots that turn dark brown. Irregular raised corky spots on fruit rind. Twig die-back from tip downward. Gum exudation from affected branches.",
+    "treatment": "Prune and destroy infected branches 30 cm below visible infection. Apply Copper Oxychloride 0.3% + Streptomycin Sulphate 500 ppm spray. Bordeaux mixture (1%) gives effective control.",
+    "prevention": "Use disease-free planting material. Avoid wounding plants during cultural operations. Disinfect pruning tools with 0.5% sodium hypochlorite solution.",
+    "icon": "🦠"
+  },
+  {
+    "id": "phytophthora_rot",
+    "name": "Phytophthora Root Rot",
+    "severity": "High",
+    "cause": "Oomycete pathogen Phytophthora spp.",
+    "symptoms": "Wilting of shoots and branches. Yellowing of foliage. Dark brown discolouration of roots and crown area. Tree decline and eventual death in severe cases.",
+    "treatment": "Drench soil with Metalaxyl-M 0.1% or Fosetyl-Al 0.3%. Improve drainage. Remove severely infected plants. Trichoderma-based biocontrol agents applied to soil.",
+    "prevention": "Ensure well-drained soil. Avoid waterlogging. Plant on raised beds in poorly draining areas.",
+    "icon": "🌱"
+  },
+  {
+    "id": "mealybug",
+    "name": "Mealybug Infestation",
+    "severity": "Medium",
+    "cause": "Insect pest Planococcus citri and Ferrisia virgata",
+    "symptoms": "White cottony masses in leaf axils, on fruit stalk and calyx. Honeydew secretion leading to sooty mould. Yellowing and wilting of shoots. Fruit blemishes and premature drop.",
+    "treatment": "Apply Imidacloprid 0.005% or Thiamethoxam 0.01% spray. Release biocontrol agent Cryptolaemus montrouzieri (mealybug destroyer beetle) at 10 beetles per tree. Fish oil rosin soap 3% spray.",
+    "prevention": "Monitor orchard regularly. Use yellow sticky traps for early detection. Maintain tree hygiene by removing dead bark and weeds.",
+    "icon": "🐛"
+  },
+  {
+    "id": "anar_butterfly",
+    "name": "Anar Butterfly (Fruit Borer)",
+    "severity": "Very High",
+    "cause": "Lepidopteran pest Deudorix isocrates",
+    "symptoms": "Pinhole entry wound on fruit with frass (excrement) outside. Larva bores into fruit, consuming seeds and internal tissue. Damaged fruits show external rotting and drop prematurely.",
+    "treatment": "Bag individual fruits at marble stage using paper/polythene bags. Spray Chlorpyriphos 0.05% or Spinosad 0.01% at fruit set. Light traps to attract and kill adult moths.",
+    "prevention": "Harvest fruits at correct maturity — overripe fruits attract more butterflies. Remove and destroy fallen fruits. Use pheromone traps for monitoring adult population.",
+    "icon": "🦋"
+  },
+  {
+    "id": "thrips",
+    "name": "Thrips",
+    "severity": "Medium",
+    "cause": "Thrips pulicarum and Scirtothrips dorsalis",
+    "symptoms": "Silver-grey or bronze discolouration on fruit skin (russeting). Scarring on developing fruits causing cosmetic damage. Leaf curling and distortion of tender shoots.",
+    "treatment": "Spray Spinosad 45SC 0.01% or Imidacloprid 0.03% at 10-day intervals. Blue sticky traps for monitoring and mass trapping. Neem oil 0.5% spray for organic management.",
+    "prevention": "Maintain weed-free orchard floor. Avoid excessive nitrogen fertilisation. Monitor with blue sticky traps from flowering stage.",
+    "icon": "🔍"
+  }
+]

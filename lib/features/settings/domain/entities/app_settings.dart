@@ -1,0 +1,73 @@
+/// Immutable value object holding all user-configurable app settings.
+library;
+
+import 'package:camera/camera.dart';
+
+/// Performance preset that maps to a frame-skip value.
+enum PerformanceMode {
+  smooth(frameSkip: 2, label: 'Smooth', hint: 'Best quality, higher battery'),
+  balanced(
+    frameSkip: 3,
+    label: 'Balanced',
+    hint: 'Recommended for most phones',
+  ),
+  aggressive(frameSkip: 5, label: 'Fast', hint: 'Best speed, lower quality');
+
+  const PerformanceMode({
+    required this.frameSkip,
+    required this.label,
+    required this.hint,
+  });
+
+  final int frameSkip;
+  final String label;
+  final String hint;
+}
+
+/// Camera quality preset shown to the user.
+enum CameraQuality {
+  low(preset: ResolutionPreset.low, label: 'Low', hint: 'Fastest, less detail'),
+  medium(preset: ResolutionPreset.medium, label: 'Medium', hint: 'Balanced'),
+  high(preset: ResolutionPreset.high, label: 'High', hint: 'Sharpest, slower');
+
+  const CameraQuality({
+    required this.preset,
+    required this.label,
+    required this.hint,
+  });
+
+  final ResolutionPreset preset;
+  final String label;
+  final String hint;
+}
+
+/// Holds all configurable settings for the app.
+final class AppSettings {
+  const AppSettings({
+    this.cameraQuality = CameraQuality.medium,
+    this.performanceMode = PerformanceMode.balanced,
+    this.confidenceThreshold = 0.45,
+    this.maxDetections = 10,
+  });
+
+  final CameraQuality cameraQuality;
+  final PerformanceMode performanceMode;
+
+  /// Minimum confidence score [0.0–1.0] to show a detection box.
+  final double confidenceThreshold;
+
+  /// Maximum number of bounding boxes shown on screen at once.
+  final int maxDetections;
+
+  AppSettings copyWith({
+    CameraQuality? cameraQuality,
+    PerformanceMode? performanceMode,
+    double? confidenceThreshold,
+    int? maxDetections,
+  }) => AppSettings(
+    cameraQuality: cameraQuality ?? this.cameraQuality,
+    performanceMode: performanceMode ?? this.performanceMode,
+    confidenceThreshold: confidenceThreshold ?? this.confidenceThreshold,
+    maxDetections: maxDetections ?? this.maxDetections,
+  );
+}

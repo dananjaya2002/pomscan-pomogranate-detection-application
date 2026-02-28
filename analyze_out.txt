@@ -1,0 +1,5 @@
+Analyzing flutter_application_1...                              
+
+   info - The private field _activeDelegate could be 'final' - lib\features\detection\data\datasources\model_datasource.dart:21:10 - prefer_final_fields
+  error - Undefined class 'Uint8List' - lib\features\detection\data\repositories\detection_repository_impl.dart:94:5 - undefined_class
+

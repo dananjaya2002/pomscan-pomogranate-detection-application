@@ -1,0 +1,90 @@
+[
+  {
+    "id": "maturity_indicators",
+    "title": "Maturity Indicators",
+    "icon": "🔍",
+    "description": "Harvesting pomegranates at the correct stage of maturity is critical for optimal sweetness, aril colour, and shelf life. Both visual and physical indicators should be assessed together.",
+    "indicator": "Harvest when fruit surface colour changes from green to yellow-bronze (variety dependent), the fruit emits metallic sound on tapping, and the calyx slightly closes.",
+    "tips": [
+      "Fruit skin colour: Green → Yellow → Orange/Red depending on variety",
+      "TSS (Total Soluble Solids): 14–16°Brix is ideal for harvesting",
+      "Acidity drops below 1.5% at maturity",
+      "Seed colour: White seeds turn dark red/pink at full maturity",
+      "Days from fruit set: 120–180 days depending on variety and climate",
+      "Metallic sound on tapping indicates firm, mature fruit; hollow sound suggests over-maturity"
+    ]
+  },
+  {
+    "id": "harvest_time",
+    "title": "Harvest Timing",
+    "icon": "📅",
+    "description": "In India, pomegranate has two main crop seasons: Ambe Bahar (flowering in January–February, harvest June–August) and Mrig Bahar (flowering June–July, harvest November–January).",
+    "indicator": "Harvest in early morning or late evening to avoid heat stress on harvested fruit. Avoid harvesting when rain is expected within 24 hours.",
+    "tips": [
+      "Ambe Bahar crop fetches higher price due to off-season availability",
+      "Mrig Bahar accounts for majority of commercial production",
+      "Hasth Bahar (September–October) suits areas with water scarcity in summer",
+      "Evening harvest reduces fruit temperature and improves storage life",
+      "Stagger harvest over 5–7 days as not all fruits ripen simultaneously"
+    ]
+  },
+  {
+    "id": "harvest_method",
+    "title": "Harvesting Method",
+    "icon": "🌾",
+    "description": "Proper harvesting technique prevents mechanical injury which leads to post-harvest quality loss, pathogen entry, and reduced shelf life.",
+    "indicator": "Use sharp, sterilised pruning shears or secateurs to cut fruit with 1–2 cm of stalk attached. Never pull or twist the fruit off the branch — this damages the calyx and increases rot incidence.",
+    "tips": [
+      "Sterilise pruning tools with 70% alcohol between cuts to prevent disease spread",
+      "Keep 1–2 cm of stalk on fruit to minimise calyx damage",
+      "Harvest into plastic crates lined with soft padding — avoid direct metal contact",
+      "Do not stack more than 2–3 layers of fruits in harvesting crates",
+      "Wear gloves to prevent skin oils and sweat affecting fruit skin bloom"
+    ]
+  },
+  {
+    "id": "post_harvest_handling",
+    "title": "Post-Harvest Handling",
+    "icon": "📦",
+    "description": "Post-harvest losses in pomegranate can reach 20–40% without proper handling. Quick cooling, gentle handling, and hygienic packing significantly extend shelf life and market value.",
+    "indicator": "Sort fruits into 3 grades within 4 hours of harvest. Grade A: >350g, blemish-free. Grade B: 200–350g, minor blemishes. Grade C: <200g or cosmetically damaged.",
+    "tips": [
+      "Pre-cool harvested fruit to 8–10°C within 4 hours of harvest",
+      "Hydro-cooling or forced-air cooling is most efficient for rapid temperature reduction",
+      "Wax coating (food-grade carnauba wax) reduces water loss and extends shelf life by 2–3 weeks",
+      "Pack in corrugated fibre board (CFB) boxes with newspaper cushioning",
+      "Standard export pack: 8–10 fruits per box (4–5 kg net weight)",
+      "Apply Carbendazim 0.1% wax treatment to prevent fruit rot during storage"
+    ]
+  },
+  {
+    "id": "storage",
+    "title": "Storage & Shelf Life",
+    "icon": "❄️",
+    "description": "Controlled atmosphere and cold chain management are essential for export markets. Pomegranates can be stored for up to 3 months under optimal cold storage conditions.",
+    "indicator": "Storage temperature: 5–8°C. Relative humidity: 90–95%. These conditions suppress fungal pathogens while maintaining fruit weight and TSS.",
+    "tips": [
+      "Cold storage shelf life: up to 90 days at 5–8°C",
+      "Ambient storage shelf life: 15–20 days at 25°C",
+      "Controlled atmosphere (3% CO₂ + 2% O₂) extends shelf life by 2–4 weeks",
+      "Modified atmosphere packaging (MAP) bags reduce respiration rate",
+      "Check stored fruit every 7 days and remove any showing signs of decay",
+      "Do not store with ethylene-producing fruits (banana, apple) — accelerates ripening"
+    ]
+  },
+  {
+    "id": "yield",
+    "title": "Yield & Economics",
+    "icon": "📊",
+    "description": "Pomegranate becomes commercially productive from the 3rd–4th year after planting. Yields increase progressively, reaching maximum productivity at 8–10 years.",
+    "indicator": "A well-managed mature orchard of Bhagwa variety should yield 30–40 kg/plant/year, translating to approximately 20–25 MT/hectare at standard spacing.",
+    "tips": [
+      "Year 1–2: Establishment phase — no commercial yield",
+      "Year 3–4: First commercial crop — 8–12 kg/plant",
+      "Year 5–7: Increasing yield — 20–30 kg/plant",
+      "Year 8–15: Peak production — 30–45 kg/plant",
+      "Economic life of orchard: 20–25 years with proper management",
+      "Grade A fruits fetch ₹60–120/kg depending on season and market"
+    ]
+  }
+]
