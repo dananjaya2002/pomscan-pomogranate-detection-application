@@ -123,7 +123,7 @@ class _DetectionPageState extends ConsumerState<DetectionPage>
     // to the first build call (avoids ref.listen race conditions).
     final modelState = ref.watch(modelInitProvider);
     final modelLoaded = !modelState.isLoading;
-    final modelError  = modelState.hasError;
+    final modelError = modelState.hasError;
     final cameraReady = ref.watch(cameraProvider) is CameraReady;
     final scanControlEnabled = modelLoaded && !modelError && cameraReady;
 
@@ -265,10 +265,9 @@ class _ModelStatusBadge extends StatelessWidget {
           color: Colors.black.withAlpha(153),
           borderRadius: BorderRadius.circular(20),
           border: Border.all(
-            color:
-                error
-                    ? const Color(0xFFF44336).withAlpha(200)
-                    : loaded
+            color: error
+                ? const Color(0xFFF44336).withAlpha(200)
+                : loaded
                     ? const Color(0xFF4CAF50).withAlpha(160)
                     : Colors.white.withAlpha(40),
             width: 1.1,
@@ -300,12 +299,15 @@ class _ModelStatusBadge extends StatelessWidget {
               ),
             const SizedBox(width: 5),
             Text(
-              error ? 'INT8 Error' : loaded ? 'INT8 Ready' : 'Loading INT8…',
+              error
+                  ? 'INT8 Error'
+                  : loaded
+                      ? 'INT8 Ready'
+                      : 'Loading INT8…',
               style: TextStyle(
-                color:
-                    error
-                        ? const Color(0xFFF44336)
-                        : loaded
+                color: error
+                    ? const Color(0xFFF44336)
+                    : loaded
                         ? const Color(0xFF4CAF50)
                         : Colors.white54,
                 fontSize: 11,

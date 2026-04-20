@@ -53,11 +53,11 @@ abstract final class AppConstants {
   };
 
   static const Map<String, Color> diseaseColors = {
-    'Alternaria': Color(0xFFE67E22),      // orange-brown
-    'Anthracnose': Color(0xFF8E44AD),     // purple
+    'Alternaria': Color(0xFFE67E22), // orange-brown
+    'Anthracnose': Color(0xFF8E44AD), // purple
     'Bacterial_Blight': Color(0xFFE74C3C), // red
-    'Cercospora': Color(0xFFD4AC0D),      // amber
-    'healthy': Color(0xFF27AE60),         // green
+    'Cercospora': Color(0xFFD4AC0D), // amber
+    'healthy': Color(0xFF27AE60), // green
   };
 
   // ── Inference thresholds ───────────────────────────────────────────────────
@@ -76,7 +76,7 @@ abstract final class AppConstants {
 
   // ── Overlay colours ────────────────────────────────────────────────────────
   static const Map<String, Color> classColors = {
-    'ripe': Color(0xFF4CAF50),   // green  — ripe
+    'ripe': Color(0xFF4CAF50), // green  — ripe
     'semi_ripe': Color(0xFF2196F3), // blue   — semi-ripe
     'unripe': Color(0xFFF44336), // red    — unripe
   };

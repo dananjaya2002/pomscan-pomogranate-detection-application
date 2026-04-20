@@ -382,10 +382,9 @@ class _ModelChip extends StatelessWidget {
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(
-          color:
-              ready
-                  ? AppColors.ripe.withAlpha(120)
-                  : AppColors.textMuted.withAlpha(60),
+          color: ready
+              ? AppColors.ripe.withAlpha(120)
+              : AppColors.textMuted.withAlpha(60),
         ),
       ),
       child: Row(
@@ -570,10 +569,9 @@ class _QuickAccessGrid extends StatelessWidget {
           child: _QuickTile(
             icon: Icons.tune_rounded,
             label: 'Settings',
-            onTap:
-                () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const SettingsPage())),
+            onTap: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const SettingsPage())),
           ),
         ),
         const SizedBox(width: 12),
@@ -581,10 +579,9 @@ class _QuickAccessGrid extends StatelessWidget {
           child: _QuickTile(
             icon: Icons.info_outline_rounded,
             label: 'About Us',
-            onTap:
-                () => Navigator.of(
-                  context,
-                ).push(MaterialPageRoute(builder: (_) => const AboutPage())),
+            onTap: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const AboutPage())),
           ),
         ),
       ],

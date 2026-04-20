@@ -43,11 +43,12 @@ final class DetectionState {
     List<Detection>? detections,
     double? fps,
     bool? isScanActive,
-  }) => DetectionState(
-    detections: detections ?? this.detections,
-    fps: fps ?? this.fps,
-    isScanActive: isScanActive ?? this.isScanActive,
-  );
+  }) =>
+      DetectionState(
+        detections: detections ?? this.detections,
+        fps: fps ?? this.fps,
+        isScanActive: isScanActive ?? this.isScanActive,
+      );
 }
 
 // ── Notifier ─────────────────────────────────────────────────────────────────
@@ -163,12 +164,11 @@ final class DetectionNotifier extends StateNotifier<DetectionState> {
       // inference on the main isolate (required by the GPU delegate).
       final settings = _ref.read(settingsProvider).valueOrNull;
       final detections = await _useCase(
-            frame,
-            confidenceThreshold: settings?.confidenceThreshold,
-            maxDetections: settings?.maxDetections,
-            preprocessSize: settings?.modelInputSize.pixels,
-          )
-          .timeout(const Duration(milliseconds: 750));
+        frame,
+        confidenceThreshold: settings?.confidenceThreshold,
+        maxDetections: settings?.maxDetections,
+        preprocessSize: settings?.modelInputSize.pixels,
+      ).timeout(const Duration(milliseconds: 750));
 
       final elapsedMs = DateTime.now().millisecondsSinceEpoch - startedAt;
       _adaptFrameSkip(elapsedMs, settings?.performanceMode.frameSkip);
@@ -289,6 +289,6 @@ final staticRunDetectionUseCaseProvider = Provider((ref) {
 
 final detectionProvider =
     StateNotifierProvider<DetectionNotifier, DetectionState>((ref) {
-      // Pass ref so the notifier can call cameraProvider.notifier methods.
-      return DetectionNotifier(ref.watch(runDetectionUseCaseProvider), ref);
-    });
+  // Pass ref so the notifier can call cameraProvider.notifier methods.
+  return DetectionNotifier(ref.watch(runDetectionUseCaseProvider), ref);
+});

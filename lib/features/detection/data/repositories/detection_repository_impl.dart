@@ -22,8 +22,8 @@ final class DetectionRepositoryImpl implements DetectionRepository {
   DetectionRepositoryImpl({
     required ModelDataSource modelDataSource,
     required CameraDataSource cameraDataSource,
-  }) : _model = modelDataSource,
-       _camera = cameraDataSource;
+  })  : _model = modelDataSource,
+        _camera = cameraDataSource;
 
   final ModelDataSource _model;
   // ignore: unused_field
@@ -35,7 +35,7 @@ final class DetectionRepositoryImpl implements DetectionRepository {
   @override
   Future<void> dispose() => _model.dispose();
 
-  //  Camera frame inference 
+  //  Camera frame inference
 
   @override
   Future<List<Detection>> detect(
@@ -54,9 +54,7 @@ final class DetectionRepositoryImpl implements DetectionRepository {
       yRowStride: frame.planes[0].bytesPerRow,
       uvRowStride: frame.planes.length > 1 ? frame.planes[1].bytesPerRow : 0,
       uvPixelStride:
-          frame.planes.length > 1
-              ? (frame.planes[1].bytesPerPixel ?? 1)
-              : 1,
+          frame.planes.length > 1 ? (frame.planes[1].bytesPerPixel ?? 1) : 1,
       modelInputSize: _model.inputSize,
       preprocessSize: preprocessSize ?? _model.inputSize,
       isBgra: isBgra,
@@ -68,8 +66,8 @@ final class DetectionRepositoryImpl implements DetectionRepository {
       const Duration(milliseconds: 500),
     );
     final rawOutput = await _model.runInference(inputBuffer).timeout(
-      const Duration(milliseconds: 650),
-    );
+          const Duration(milliseconds: 650),
+        );
     return _parseYoloOutput(
       rawOutput,
       confidenceThreshold ?? AppConstants.confidenceThreshold,
@@ -78,7 +76,7 @@ final class DetectionRepositoryImpl implements DetectionRepository {
     );
   }
 
-  //  Static image inference 
+  //  Static image inference
 
   @override
   Future<List<Detection>> detectOnImage(
@@ -93,8 +91,8 @@ final class DetectionRepositoryImpl implements DetectionRepository {
     }
     final inputBuffer = _preprocessImageBytes(imageBytes);
     final rawOutput = await _model.runInference(inputBuffer).timeout(
-      const Duration(milliseconds: 1200),
-    );
+          const Duration(milliseconds: 1200),
+        );
     return _parseYoloOutput(
       rawOutput,
       confidenceThreshold ?? AppConstants.confidenceThreshold,
@@ -103,7 +101,7 @@ final class DetectionRepositoryImpl implements DetectionRepository {
     );
   }
 
-  //  Preprocessing 
+  //  Preprocessing
 
   // Camera frame preprocessing is now handled by [preprocessCameraFrame] in
   // frame_preprocessor.dart, which runs via compute() in a background isolate.
@@ -151,7 +149,7 @@ final class DetectionRepositoryImpl implements DetectionRepository {
     return buffer;
   }
 
-  //  YOLO11 output decoding 
+  //  YOLO11 output decoding
 
   /// Decodes the YOLO11 output tensor.
   ///
@@ -218,7 +216,7 @@ final class DetectionRepositoryImpl implements DetectionRepository {
         .toList();
   }
 
-  //  Non-Maximum Suppression 
+  //  Non-Maximum Suppression
 
   List<Detection> _nms(List<Detection> boxes, double iouThreshold) {
     final result = <Detection>[];

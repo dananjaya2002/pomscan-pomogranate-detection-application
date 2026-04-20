@@ -106,12 +106,11 @@ final class DetectionDashboard extends ConsumerWidget {
                         _TotalBadge(count: detections.length),
                         const SizedBox(width: 6),
                         GestureDetector(
-                          onTap:
-                              () => Navigator.of(context).push(
-                                MaterialPageRoute(
-                                  builder: (_) => const SettingsPage(),
-                                ),
-                              ),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const SettingsPage(),
+                            ),
+                          ),
                           child: Container(
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
@@ -356,19 +355,21 @@ class _ScanButton extends StatelessWidget {
     final bgColor = !enabled
         ? Colors.white.withAlpha(12)
         : isScanning
-        ? const Color(0xFF2E7D32).withAlpha(90)
-        : const Color(0xFF1976D2).withAlpha(90);
+            ? const Color(0xFF2E7D32).withAlpha(90)
+            : const Color(0xFF1976D2).withAlpha(90);
     final borderColor = !enabled
         ? Colors.white24
         : isScanning
-        ? const Color(0xFF66BB6A)
-        : const Color(0xFF64B5F6);
-    final icon = isScanning ? Icons.pause_circle_rounded : Icons.play_circle_fill_rounded;
+            ? const Color(0xFF66BB6A)
+            : const Color(0xFF64B5F6);
+    final icon = isScanning
+        ? Icons.pause_circle_rounded
+        : Icons.play_circle_fill_rounded;
     final label = !enabled
         ? 'Idle'
         : isScanning
-        ? 'Scanning...'
-        : 'Start Scan';
+            ? 'Scanning...'
+            : 'Start Scan';
 
     return GestureDetector(
       onTap: enabled ? onTap : null,
@@ -384,7 +385,8 @@ class _ScanButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: enabled ? Colors.white : Colors.white38, size: 16),
+            Icon(icon,
+                color: enabled ? Colors.white : Colors.white38, size: 16),
             const SizedBox(width: 6),
             Text(
               label,
@@ -424,16 +426,15 @@ class _TorchButton extends StatelessWidget {
             color: torchOn ? Colors.amber : Colors.white30,
             width: 1.5,
           ),
-          boxShadow:
-              torchOn
-                  ? [
-                    BoxShadow(
-                      color: Colors.amber.withAlpha(77),
-                      blurRadius: 8,
-                      spreadRadius: 1,
-                    ),
-                  ]
-                  : null,
+          boxShadow: torchOn
+              ? [
+                  BoxShadow(
+                    color: Colors.amber.withAlpha(77),
+                    blurRadius: 8,
+                    spreadRadius: 1,
+                  ),
+                ]
+              : null,
         ),
         child: Icon(
           torchOn ? Icons.flashlight_on_rounded : Icons.flashlight_off_rounded,

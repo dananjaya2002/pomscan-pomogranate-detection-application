@@ -12,7 +12,8 @@ class StaticDetectionPage extends ConsumerStatefulWidget {
   const StaticDetectionPage({super.key});
 
   @override
-  ConsumerState<StaticDetectionPage> createState() => _StaticDetectionPageState();
+  ConsumerState<StaticDetectionPage> createState() =>
+      _StaticDetectionPageState();
 }
 
 class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
@@ -51,7 +52,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
       if (bytes.isEmpty) {
         throw StateError('Selected image is empty. Please choose another one.');
       }
-      
+
       // Decode image to get dimensions for inference
       final decodedImage = await decodeImageFromList(bytes);
       if (decodedImage.width <= 0 || decodedImage.height <= 0) {
@@ -74,7 +75,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
       });
 
       final useCase = ref.read(staticRunDetectionUseCaseProvider);
-      
+
       final results = await useCase.callStatic(
         bytes,
         decodedImage.width,
@@ -97,14 +98,12 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
           _isLoadingModel = false;
         });
         final error = '$e'.toLowerCase();
-        final message =
-            error.contains('could not decode image') ||
+        final message = error.contains('could not decode image') ||
                 error.contains('selected image is empty')
             ? 'Image could not be processed. Please use a valid JPG or PNG image.'
-          : error.contains('shape mismatch') ||
-            error.contains('tensor')
-          ? 'Model tensor mismatch. Please verify the selected detection model export.'
-            : 'Detection failed. Please try again.';
+            : error.contains('shape mismatch') || error.contains('tensor')
+                ? 'Model tensor mismatch. Please verify the selected detection model export.'
+                : 'Detection failed. Please try again.';
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message)),
         );
@@ -128,8 +127,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                       fit: StackFit.loose,
                       children: [
                         Image.file(_image!),
-                        if (_detections != null &&
-                            _imageNaturalSize != null)
+                        if (_detections != null && _imageNaturalSize != null)
                           Positioned.fill(
                             child: CustomPaint(
                               painter: _StaticBBoxPainter(
@@ -329,8 +327,7 @@ class _StaticBBoxPainter extends CustomPainter {
     final double pillW = tp.width + padding * 2;
     final double pillH = tp.height + padding * 2;
     final double pillX = rect.left.clamp(0.0, canvasSize.width - pillW);
-    final double pillTop =
-        (rect.top - pillH - 2.0).clamp(0.0, double.infinity);
+    final double pillTop = (rect.top - pillH - 2.0).clamp(0.0, double.infinity);
 
     canvas.drawRRect(
       RRect.fromRectAndRadius(
@@ -345,6 +342,5 @@ class _StaticBBoxPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_StaticBBoxPainter old) =>
-      old.detections != detections ||
-      old.naturalImageSize != naturalImageSize;
+      old.detections != detections || old.naturalImageSize != naturalImageSize;
 }
