@@ -77,7 +77,7 @@ final class CameraNotifier extends StateNotifier<CameraState> {
       // 2. Read the user’s chosen camera quality and pass it to the datasource
       //    so the CameraController is created at the correct resolution.
       final settings = _ref.read(settingsProvider).valueOrNull;
-      final resolution = settings?.cameraQuality.preset ?? ResolutionPreset.medium;
+      final resolution = settings?.cameraQuality.preset ?? ResolutionPreset.high;
 
       // 3. Hardware init
       await _dataSource.initialise(resolution: resolution);

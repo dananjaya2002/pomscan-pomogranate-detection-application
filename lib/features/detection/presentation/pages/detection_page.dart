@@ -124,6 +124,8 @@ class _DetectionPageState extends ConsumerState<DetectionPage>
     final modelState = ref.watch(modelInitProvider);
     final modelLoaded = !modelState.isLoading;
     final modelError  = modelState.hasError;
+    final cameraReady = ref.watch(cameraProvider) is CameraReady;
+    final scanControlEnabled = modelLoaded && !modelError && cameraReady;
 
     // Side effect only: flip _modelReady and start the inference stream once
     // the model successfully loads. We use ref.listen here for the async
@@ -167,7 +169,7 @@ class _DetectionPageState extends ConsumerState<DetectionPage>
       // the initial camera init, reinitialise the camera at the correct level.
       if (_lastCameraQuality == null) {
         _lastCameraQuality = newQuality;
-        if (newQuality != CameraQuality.medium) {
+        if (newQuality != CameraQuality.high) {
           _tryStopDetection();
           Future.microtask(
             () => ref.read(cameraProvider.notifier).reinitialise(),
@@ -230,7 +232,11 @@ class _DetectionPageState extends ConsumerState<DetectionPage>
             ),
 
             // Layer 5: Dashboard panel (bottom)
-            DetectionDashboard(torchOn: _torchOn, onTorchToggle: _toggleTorch),
+            DetectionDashboard(
+              torchOn: _torchOn,
+              onTorchToggle: _toggleTorch,
+              scanControlEnabled: scanControlEnabled,
+            ),
           ],
         ),
       ),
@@ -294,7 +300,7 @@ class _ModelStatusBadge extends StatelessWidget {
               ),
             const SizedBox(width: 5),
             Text(
-              error ? 'AI Error' : loaded ? 'AI Ready' : 'Loading AI…',
+              error ? 'INT8 Error' : loaded ? 'INT8 Ready' : 'Loading INT8…',
               style: TextStyle(
                 color:
                     error

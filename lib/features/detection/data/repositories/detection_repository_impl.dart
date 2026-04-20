@@ -3,12 +3,15 @@
 /// Orchestrates [CameraDataSource]  [ModelDataSource].
 library;
 
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart' show compute;
 import 'package:image/image.dart' as img;
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/utils/frame_preprocessor.dart';
 import '../../domain/entities/bounding_box.dart';
 import '../../domain/entities/detection.dart';
 import '../../domain/repositories/detection_repository.dart';
@@ -39,13 +42,39 @@ final class DetectionRepositoryImpl implements DetectionRepository {
     CameraImage frame, {
     double? confidenceThreshold,
     int? maxDetections,
+    int? preprocessSize,
   }) async {
-    final inputBuffer = _preprocessCameraImage(frame);
-    final rawOutput = await _model.runInference(inputBuffer);
+    final bool isBgra = frame.format.group == ImageFormatGroup.bgra8888;
+    final input = FramePreprocessInput(
+      yBytes: frame.planes[0].bytes,
+      uBytes: frame.planes.length > 1 ? frame.planes[1].bytes : Uint8List(0),
+      vBytes: frame.planes.length > 2 ? frame.planes[2].bytes : Uint8List(0),
+      width: frame.width,
+      height: frame.height,
+      yRowStride: frame.planes[0].bytesPerRow,
+      uvRowStride: frame.planes.length > 1 ? frame.planes[1].bytesPerRow : 0,
+      uvPixelStride:
+          frame.planes.length > 1
+              ? (frame.planes[1].bytesPerPixel ?? 1)
+              : 1,
+      modelInputSize: _model.inputSize,
+      preprocessSize: preprocessSize ?? _model.inputSize,
+      isBgra: isBgra,
+      bgraBytes: isBgra ? frame.planes[0].bytes : null,
+    );
+
+    // Offload heavy YUV→RGB conversion + resize to a background isolate.
+    final inputBuffer = await compute(preprocessCameraFrame, input).timeout(
+      const Duration(milliseconds: 500),
+    );
+    final rawOutput = await _model.runInference(inputBuffer).timeout(
+      const Duration(milliseconds: 650),
+    );
     return _parseYoloOutput(
       rawOutput,
       confidenceThreshold ?? AppConstants.confidenceThreshold,
       maxDetections ?? AppConstants.maxDetections,
+      _model.inputSize,
     );
   }
 
@@ -59,103 +88,60 @@ final class DetectionRepositoryImpl implements DetectionRepository {
     double? confidenceThreshold,
     int? maxDetections,
   }) async {
+    if (imageBytes.isEmpty) {
+      throw StateError('Selected image is empty. Please choose another image.');
+    }
     final inputBuffer = _preprocessImageBytes(imageBytes);
-    final rawOutput = await _model.runInference(inputBuffer);
+    final rawOutput = await _model.runInference(inputBuffer).timeout(
+      const Duration(milliseconds: 1200),
+    );
     return _parseYoloOutput(
       rawOutput,
       confidenceThreshold ?? AppConstants.confidenceThreshold,
       maxDetections ?? AppConstants.maxDetections,
+      _model.inputSize,
     );
   }
 
   //  Preprocessing 
 
-  /// Converts a [CameraImage] (YUV420 or BGRA8888) to a normalised
-  /// Float32List ready for the TFLite interpreter.
-  Float32List _preprocessCameraImage(CameraImage frame) {
-    img.Image? image;
+  // Camera frame preprocessing is now handled by [preprocessCameraFrame] in
+  // frame_preprocessor.dart, which runs via compute() in a background isolate.
 
-    if (frame.format.group == ImageFormatGroup.yuv420) {
-      image = _convertYUV420(frame);
-    } else if (frame.format.group == ImageFormatGroup.bgra8888) {
-      image = img.Image.fromBytes(
-        width: frame.width,
-        height: frame.height,
-        bytes: frame.planes[0].bytes.buffer,
-        order: img.ChannelOrder.bgra,
-      );
-    } else if (frame.format.group == ImageFormatGroup.nv21) {
-      image = _convertYUV420(frame);
-    }
-
-    if (image == null) {
-      throw StateError(
-        'Unsupported CameraImage format: ${frame.format.group}',
-      );
-    }
-
-    return _imageToFloat32(image);
-  }
-
-  /// Converts a YUV420 (or NV21) [CameraImage] to an [img.Image].
-  img.Image _convertYUV420(CameraImage frame) {
-    final result = img.Image(width: frame.width, height: frame.height);
-
-    final yPlane = frame.planes[0].bytes;
-    final uPlane = frame.planes[1].bytes;
-    final vPlane = frame.planes[2].bytes;
-
-    final yRowStride = frame.planes[0].bytesPerRow;
-    final uvRowStride = frame.planes[1].bytesPerRow;
-    final uvPixelStride = frame.planes[1].bytesPerPixel ?? 1;
-
-    for (int y = 0; y < frame.height; y++) {
-      for (int x = 0; x < frame.width; x++) {
-        final yIndex = y * yRowStride + x;
-        final uvIndex =
-            (y ~/ 2) * uvRowStride + (x ~/ 2) * uvPixelStride;
-
-        final yVal = yPlane[yIndex] & 0xFF;
-        final uVal = (uPlane[uvIndex] & 0xFF) - 128;
-        final vVal = (vPlane[uvIndex] & 0xFF) - 128;
-
-        final r = (yVal + 1.402 * vVal).round().clamp(0, 255);
-        final g =
-            (yVal - 0.344136 * uVal - 0.714136 * vVal)
-                .round()
-                .clamp(0, 255);
-        final b = (yVal + 1.772 * uVal).round().clamp(0, 255);
-
-        result.setPixelRgb(x, y, r, g, b);
-      }
-    }
-    return result;
-  }
-
-  /// Decodes raw image bytes (JPEG/PNG/) to a normalised Float32List.
+  /// Decodes raw image bytes (JPEG/PNG) to a normalised Float32List.
   Float32List _preprocessImageBytes(Uint8List bytes) {
-    final image = img.decodeImage(bytes);
-    if (image == null) throw StateError('Could not decode image bytes');
-    return _imageToFloat32(image);
+    try {
+      final image = img.decodeImage(bytes);
+      if (image == null || image.width <= 0 || image.height <= 0) {
+        throw StateError(
+          'Could not decode image. Please use a valid JPG or PNG image.',
+        );
+      }
+      return _imageToFloat32(image, _model.inputSize);
+    } catch (_) {
+      throw StateError(
+        'Could not decode image. Please use a valid JPG or PNG image.',
+      );
+    }
   }
 
   /// Resizes [image] to [AppConstants.inputSize] squared and returns a flat
   /// Float32List normalised to [0, 1] in HWC order.
-  Float32List _imageToFloat32(img.Image image) {
+  Float32List _imageToFloat32(img.Image image, int modelInputSize) {
     final resized = img.copyResize(
       image,
-      width: AppConstants.inputSize,
-      height: AppConstants.inputSize,
+      width: modelInputSize,
+      height: modelInputSize,
       interpolation: img.Interpolation.linear,
     );
 
     final buffer = Float32List(
-      AppConstants.inputSize * AppConstants.inputSize * 3,
+      modelInputSize * modelInputSize * 3,
     );
 
     var idx = 0;
-    for (int y = 0; y < AppConstants.inputSize; y++) {
-      for (int x = 0; x < AppConstants.inputSize; x++) {
+    for (int y = 0; y < modelInputSize; y++) {
+      for (int x = 0; x < modelInputSize; x++) {
         final pixel = resized.getPixel(x, y);
         buffer[idx++] = pixel.r / 255.0;
         buffer[idx++] = pixel.g / 255.0;
@@ -169,21 +155,32 @@ final class DetectionRepositoryImpl implements DetectionRepository {
 
   /// Decodes the YOLO11 output tensor.
   ///
-  /// [output] has shape [7][8400]:
+  /// [output] has shape [rows][anchors]:
   ///   - rows 0-3 : cx, cy, w, h in [0, inputSize] pixel space
-  ///   - rows 4-6 : class scores (ripe, semi_ripe, unripe)
+  ///   - rows 4.. : class scores
   List<Detection> _parseYoloOutput(
     List<List<double>> output,
     double confidenceThreshold,
     int maxDetections,
+    int modelInputSize,
   ) {
-    final anchors = output[0].length; // 8400
+    if (output.length < 5 || output[0].isEmpty) {
+      return const [];
+    }
+
+    final anchors = output[0].length;
+    final availableClassRows = output.length - 4;
+    final classCount = availableClassRows < AppConstants.classLabels.length
+        ? availableClassRows
+        : AppConstants.classLabels.length;
+    if (classCount <= 0) return const [];
+
     final candidates = <Detection>[];
 
     for (var i = 0; i < anchors; i++) {
       var maxScore = 0.0;
       var classIdx = 0;
-      for (var c = 0; c < AppConstants.numClasses; c++) {
+      for (var c = 0; c < classCount; c++) {
         final s = output[4 + c][i];
         if (s > maxScore) {
           maxScore = s;
@@ -193,10 +190,10 @@ final class DetectionRepositoryImpl implements DetectionRepository {
 
       if (maxScore < confidenceThreshold) continue;
 
-      final cx = output[0][i] / AppConstants.inputSize;
-      final cy = output[1][i] / AppConstants.inputSize;
-      final w = output[2][i] / AppConstants.inputSize;
-      final h = output[3][i] / AppConstants.inputSize;
+      final cx = output[0][i] / modelInputSize;
+      final cy = output[1][i] / modelInputSize;
+      final w = output[2][i] / modelInputSize;
+      final h = output[3][i] / modelInputSize;
 
       final x1 = (cx - w / 2).clamp(0.0, 1.0);
       final y1 = (cy - h / 2).clamp(0.0, 1.0);

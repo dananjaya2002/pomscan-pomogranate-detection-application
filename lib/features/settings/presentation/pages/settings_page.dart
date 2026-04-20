@@ -56,6 +56,20 @@ class SettingsPage extends ConsumerWidget {
                         .read(settingsProvider.notifier)
                         .updatePerformanceMode(v),
               ),
+              _Divider(),
+              _SegmentedRow<ModelInputSize>(
+                label: 'Preprocessing Quality',
+                description:
+                    'Sampling resolution before inference. Lower = faster YUV conversion.',
+                values: ModelInputSize.values,
+                selected: settings.modelInputSize,
+                labelOf: (v) => v.label,
+                hintOf: (v) => v.hint,
+                onChanged:
+                    (v) => ref
+                        .read(settingsProvider.notifier)
+                        .updateModelInputSize(v),
+              ),
             ],
           ),
 
@@ -101,7 +115,11 @@ class SettingsPage extends ConsumerWidget {
             children: [
               _InfoRow(label: 'Model', value: 'YOLO11 (3-class)'),
               _Divider(),
-              _InfoRow(label: 'Input Size', value: '640 × 640 px'),
+              _InfoRow(
+                label: 'Input Size',
+                value:
+                    '${settings.modelInputSize.pixels} × 640 px (model 640×640)',
+              ),
               _Divider(),
               _InfoRow(label: 'Framework', value: 'TFLite 0.12'),
               _Divider(),

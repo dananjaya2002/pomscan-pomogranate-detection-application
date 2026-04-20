@@ -38,14 +38,13 @@ final class CameraDataSource {
 
   /// Discovers and initialises the first back-facing camera.
   ///
-  /// [resolution] defaults to [ResolutionPreset.medium] (640×480 on most
-  /// devices), which closely matches the model’s 640-px input size and avoids
-  /// the overhead of downscaling large frames in software.  Pass a different
-  /// preset from the user’s [AppSettings.cameraQuality] to honour the setting.
+  /// [resolution] defaults to [ResolutionPreset.high] so users get a more
+  /// phone-camera-like live preview. Model preprocessing still downsamples to
+  /// the configured inference size in the detection pipeline.
   ///
   /// Throws [CameraFailure] if no back camera is found or initialisation fails.
   Future<void> initialise({
-    ResolutionPreset resolution = ResolutionPreset.medium,
+    ResolutionPreset resolution = ResolutionPreset.high,
   }) async {
     try {
       final cameras = await availableCameras();

@@ -86,14 +86,31 @@ class _BBoxPainter extends CustomPainter {
       size,
     );
 
-    // ── Corner brackets ───────────────────────────────────────────────────
+    // ── Subtle fill ───────────────────────────────────────────────────────
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(rect, const Radius.circular(6)),
+      Paint()..color = color.withAlpha(22),
+    );
+
+    // ── Full rounded-rect border ──────────────────────────────────────────
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(rect, const Radius.circular(6)),
+      Paint()
+        ..color = color.withAlpha(160)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1.5,
+    );
+
+    // ── Corner accent brackets (drawn on top of the full rect) ────────────
     final Paint bracketPaint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = _strokeWidth
       ..strokeCap = StrokeCap.square;
 
-    final double cl = _cornerLen.clamp(0.0, rect.width * 0.35);
+    final double cl = _cornerLen
+        .clamp(12.0, 30.0)
+        .clamp(0.0, rect.width * 0.35);
     final double cs = cl.clamp(0.0, rect.height * 0.35);
 
     // Top-left
@@ -113,12 +130,6 @@ class _BBoxPainter extends CustomPainter {
           rect.bottomRight, rect.bottomRight.translate(-cl, 0), bracketPaint)
       ..drawLine(
           rect.bottomRight, rect.bottomRight.translate(0, -cs), bracketPaint);
-
-    // Subtle semi-transparent fill inside the box
-    canvas.drawRect(
-      rect,
-      Paint()..color = color.withAlpha(18),
-    );
 
     // ── Label pill ─────────────────────────────────────────────────────────
     _drawLabel(canvas, size, rect, detection, color);

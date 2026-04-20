@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../detection/presentation/pages/detection_page.dart';
 import '../../../detection/presentation/providers/detection_provider.dart';
+import '../../../disease_detection/presentation/pages/disease_detection_page.dart';
+import '../../../disease_detection/presentation/providers/disease_detection_provider.dart';
 import '../../../info/domain/entities/info_item.dart';
 import '../../../info/presentation/pages/info_list_page.dart';
 import '../../../settings/presentation/pages/settings_page.dart';
@@ -21,6 +23,10 @@ class HomePage extends ConsumerWidget {
     final modelState = ref.watch(modelInitProvider);
     final modelReady = modelState.hasValue && !modelState.hasError;
 
+    final diseaseModelState = ref.watch(diseaseModelInitProvider);
+    final diseaseModelReady =
+        diseaseModelState.hasValue && !diseaseModelState.hasError;
+
     return Scaffold(
       backgroundColor: AppColors.background,
       body: CustomScrollView(
@@ -32,7 +38,13 @@ class HomePage extends ConsumerWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 const SizedBox(height: 8),
-                _ScanHeroCard(modelReady: modelReady),
+                _SectionHeader(title: 'Detection'),
+                const SizedBox(height: 14),
+                _RealtimeDetectionCard(modelReady: modelReady),
+                const SizedBox(height: 12),
+                _StaticScanCard(modelReady: modelReady),
+                const SizedBox(height: 16),
+                _DiseaseHeroCard(modelReady: diseaseModelReady),
                 const SizedBox(height: 28),
                 _SectionHeader(title: 'Knowledge Base'),
                 const SizedBox(height: 14),
@@ -89,11 +101,11 @@ class HomePage extends ConsumerWidget {
 }
 
 // ---------------------------------------------------------------------------
-// Scan hero card
+// Detection cards
 // ---------------------------------------------------------------------------
 
-class _ScanHeroCard extends StatelessWidget {
-  const _ScanHeroCard({required this.modelReady});
+class _RealtimeDetectionCard extends StatelessWidget {
+  const _RealtimeDetectionCard({required this.modelReady});
   final bool modelReady;
 
   @override
@@ -105,12 +117,187 @@ class _ScanHeroCard extends StatelessWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withAlpha(65),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('🎥', style: TextStyle(fontSize: 30)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Real-time Fruit Detection',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Live camera scan with INT8 model\noptimized for low latency',
+                      style: TextStyle(
+                        color: AppColors.textSecondary,
+                        fontSize: 12,
+                        height: 1.4,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _ModelChip(ready: modelReady),
+            ],
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.accent,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+              icon: const Icon(Icons.camera_alt_rounded, size: 19),
+              label: const Text(
+                'Open Real-time Camera (INT8)',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(builder: (_) => const DetectionPage()),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StaticScanCard extends StatelessWidget {
+  const _StaticScanCard({required this.modelReady});
+  final bool modelReady;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColors.primary.withAlpha(90)),
+      ),
+      padding: const EdgeInsets.all(18),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('🖼️', style: TextStyle(fontSize: 28)),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text(
+                      'Static Image Scan',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'Capture or choose photos and run\nFloat32 high-accuracy detection',
+                      style: TextStyle(
+                        color: AppColors.textMuted,
+                        fontSize: 12,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              _ModelChip(ready: modelReady),
+            ],
+          ),
+          const SizedBox(height: 14),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primary,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 13),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                elevation: 0,
+              ),
+              icon: const Icon(Icons.image_search_rounded, size: 19),
+              label: const Text(
+                'Open Static Scan (Float32)',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+              ),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const StaticDetectionPage(),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Disease detection hero card
+// ---------------------------------------------------------------------------
+
+class _DiseaseHeroCard extends StatelessWidget {
+  const _DiseaseHeroCard({required this.modelReady});
+  final bool modelReady;
+
+  @override
+  Widget build(BuildContext context) {
+    const accentDark = Color(0xFF7B1A12);
+    const accentMid = Color(0xFFC0392B);
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [accentDark, accentMid],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
         borderRadius: BorderRadius.circular(AppDimens.radiusLarge),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withAlpha(80),
-            blurRadius: 24,
-            offset: const Offset(0, 8),
+            color: accentMid.withAlpha(70),
+            blurRadius: 20,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
@@ -120,14 +307,14 @@ class _ScanHeroCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text('🍎', style: TextStyle(fontSize: 32)),
+              const Text('🔬', style: TextStyle(fontSize: 32)),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: const [
                     Text(
-                      'Start Scanning',
+                      'Detect Diseases',
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 20,
@@ -136,7 +323,7 @@ class _ScanHeroCard extends StatelessWidget {
                     ),
                     SizedBox(height: 2),
                     Text(
-                      'Point camera at pomegranates\nfor instant ripeness detection',
+                      'Identify pomegranate diseases\nfrom a photo',
                       style: TextStyle(
                         color: AppColors.textSecondary,
                         fontSize: 13,
@@ -150,58 +337,32 @@ class _ScanHeroCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.surface,
-                    foregroundColor: AppColors.primary,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  icon: const Icon(Icons.image_search_rounded, size: 20),
-                  label: const Text(
-                    'Static Image',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const StaticDetectionPage(),
-                      ),
-                    );
-                  },
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.white.withAlpha(30),
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: Colors.white.withAlpha(80)),
                 ),
+                elevation: 0,
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.accent,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  icon: const Icon(Icons.camera_alt_rounded, size: 20),
-                  label: const Text(
-                    'Try Camera',
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const DetectionPage()),
-                    );
-                  },
-                ),
+              icon: const Icon(Icons.biotech_rounded, size: 20),
+              label: const Text(
+                'Analyse Image',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
               ),
-            ],
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => const DiseaseDetectionPage(),
+                  ),
+                );
+              },
+            ),
           ),
         ],
       ),

@@ -39,7 +39,8 @@ class _LivePreview extends StatelessWidget {
     // OverflowBox + FittedBox let us clip the preview to fill without distortion.
     return LayoutBuilder(
       builder: (context, constraints) {
-        final double previewAspect = controller.value.aspectRatio;
+        final double rawAspect = controller.value.aspectRatio;
+        final double previewAspect = rawAspect > 1.0 ? 1.0 / rawAspect : rawAspect;
         final double screenAspect =
             constraints.maxWidth / constraints.maxHeight;
 

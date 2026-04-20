@@ -31,8 +31,8 @@ final class FpsCounter extends ConsumerWidget {
     final label = fps <= 0.0 ? '— FPS' : '${fps.toStringAsFixed(1)} FPS';
 
     return Positioned(
-      top: MediaQuery.of(context).padding.top + 12.0,
-      left: 12.0,
+      top: MediaQuery.of(context).padding.top + 52.0,
+      right: 12.0,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: BoxDecoration(

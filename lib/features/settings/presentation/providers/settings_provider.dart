@@ -35,6 +35,9 @@ final class SettingsNotifier extends AsyncNotifier<AppSettings> {
   Future<void> updateMaxDetections(int value) =>
       _update((s) => s.copyWith(maxDetections: value));
 
+  Future<void> updateModelInputSize(ModelInputSize size) =>
+      _update((s) => s.copyWith(modelInputSize: size));
+
   Future<void> _update(AppSettings Function(AppSettings) updater) async {
     final current = state.valueOrNull ?? const AppSettings();
     final next = updater(current);

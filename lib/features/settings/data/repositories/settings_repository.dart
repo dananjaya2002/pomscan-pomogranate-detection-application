@@ -10,6 +10,7 @@ abstract final class _Keys {
   static const performanceMode = 'settings.performance_mode';
   static const confidenceThreshold = 'settings.confidence_threshold';
   static const maxDetections = 'settings.max_detections';
+  static const modelInputSize = 'settings.model_input_size';
 }
 
 final class SettingsRepository {
@@ -23,6 +24,7 @@ final class SettingsRepository {
     final pmIndex = prefs.getInt(_Keys.performanceMode);
     final conf = prefs.getDouble(_Keys.confidenceThreshold);
     final maxDet = prefs.getInt(_Keys.maxDetections);
+    final misIndex = prefs.getInt(_Keys.modelInputSize);
 
     return AppSettings(
       cameraQuality:
@@ -41,6 +43,13 @@ final class SettingsRepository {
               : PerformanceMode.balanced,
       confidenceThreshold: conf?.clamp(0.25, 0.85) ?? 0.45,
       maxDetections: maxDet?.clamp(1, 10) ?? 10,
+      modelInputSize:
+          misIndex != null
+              ? ModelInputSize.values[misIndex.clamp(
+                0,
+                ModelInputSize.values.length - 1,
+              )]
+              : ModelInputSize.quality,
     );
   }
 
@@ -52,6 +61,7 @@ final class SettingsRepository {
       prefs.setInt(_Keys.performanceMode, settings.performanceMode.index),
       prefs.setDouble(_Keys.confidenceThreshold, settings.confidenceThreshold),
       prefs.setInt(_Keys.maxDetections, settings.maxDetections),
+      prefs.setInt(_Keys.modelInputSize, settings.modelInputSize.index),
     ]);
   }
 }

@@ -41,13 +41,48 @@ enum CameraQuality {
   final String hint;
 }
 
-/// Holds all configurable settings for the app.
+/// Preprocessing resolution that controls speed vs. quality of the
+/// YUV→RGB conversion step running in the background isolate.
+///
+/// Lower values sample fewer camera pixels (step-based downscaling) so
+/// the conversion loop runs faster, trading a small amount of detail
+/// for a meaningful FPS improvement on CPU-only devices.
+enum ModelInputSize {
+  fast(
+    pixels: 320,
+    label: '320',
+    hint: 'Fastest, lower quality',
+  ),
+  balanced(
+    pixels: 416,
+    label: '416',
+    hint: 'Balanced',
+  ),
+  quality(
+    pixels: 640,
+    label: '640',
+    hint: 'Best quality, slower',
+  );
+
+  const ModelInputSize({
+    required this.pixels,
+    required this.label,
+    required this.hint,
+  });
+
+  final int pixels;
+  final String label;
+  final String hint;
+}
+
+
 final class AppSettings {
   const AppSettings({
-    this.cameraQuality = CameraQuality.medium,
+    this.cameraQuality = CameraQuality.high,
     this.performanceMode = PerformanceMode.balanced,
     this.confidenceThreshold = 0.45,
     this.maxDetections = 10,
+    this.modelInputSize = ModelInputSize.balanced,
   });
 
   final CameraQuality cameraQuality;
@@ -59,15 +94,20 @@ final class AppSettings {
   /// Maximum number of bounding boxes shown on screen at once.
   final int maxDetections;
 
+  /// Preprocessing resolution — controls YUV→RGB sampling speed.
+  final ModelInputSize modelInputSize;
+
   AppSettings copyWith({
     CameraQuality? cameraQuality,
     PerformanceMode? performanceMode,
     double? confidenceThreshold,
     int? maxDetections,
+    ModelInputSize? modelInputSize,
   }) => AppSettings(
     cameraQuality: cameraQuality ?? this.cameraQuality,
     performanceMode: performanceMode ?? this.performanceMode,
     confidenceThreshold: confidenceThreshold ?? this.confidenceThreshold,
     maxDetections: maxDetections ?? this.maxDetections,
+    modelInputSize: modelInputSize ?? this.modelInputSize,
   );
 }

@@ -20,14 +20,19 @@ final class DetectionDashboard extends ConsumerWidget {
     super.key,
     required this.torchOn,
     required this.onTorchToggle,
+    required this.scanControlEnabled,
   });
 
   final bool torchOn;
   final VoidCallback onTorchToggle;
+  final bool scanControlEnabled;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final detections = ref.watch(detectionProvider.select((s) => s.detections));
+    final isScanActive = ref.watch(
+      detectionProvider.select((s) => s.isScanActive),
+    );
 
     // Aggregate counts and collect confidence scores per class.
     final counts = <String, int>{'ripe': 0, 'semi_ripe': 0, 'unripe': 0};
@@ -182,7 +187,19 @@ final class DetectionDashboard extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    _TorchButton(torchOn: torchOn, onTap: onTorchToggle),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _ScanButton(
+                          enabled: scanControlEnabled,
+                          isScanning: isScanActive,
+                          onTap: () =>
+                              ref.read(detectionProvider.notifier).toggleScan(),
+                        ),
+                        const SizedBox(width: 10),
+                        _TorchButton(torchOn: torchOn, onTap: onTorchToggle),
+                      ],
+                    ),
                   ],
                 ),
               ],
@@ -314,6 +331,68 @@ class _ClassCard extends StatelessWidget {
               style: TextStyle(
                 color: hasDetection ? Colors.white38 : Colors.white24,
                 fontSize: 9.5,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ScanButton extends StatelessWidget {
+  const _ScanButton({
+    required this.enabled,
+    required this.isScanning,
+    required this.onTap,
+  });
+
+  final bool enabled;
+  final bool isScanning;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final bgColor = !enabled
+        ? Colors.white.withAlpha(12)
+        : isScanning
+        ? const Color(0xFF2E7D32).withAlpha(90)
+        : const Color(0xFF1976D2).withAlpha(90);
+    final borderColor = !enabled
+        ? Colors.white24
+        : isScanning
+        ? const Color(0xFF66BB6A)
+        : const Color(0xFF64B5F6);
+    final icon = isScanning ? Icons.pause_circle_rounded : Icons.play_circle_fill_rounded;
+    final label = !enabled
+        ? 'Idle'
+        : isScanning
+        ? 'Scanning...'
+        : 'Start Scan';
+
+    return GestureDetector(
+      onTap: enabled ? onTap : null,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 9),
+        decoration: BoxDecoration(
+          color: bgColor,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: borderColor, width: 1.2),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: enabled ? Colors.white : Colors.white38, size: 16),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                color: enabled ? Colors.white : Colors.white38,
+                fontSize: 11.5,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.15,
               ),
             ),
           ],
