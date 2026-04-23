@@ -226,12 +226,20 @@ class _StaticBBoxPainter extends CustomPainter {
       final box = detection.box;
 
       // Map normalised [0,1] model coords to the rendered image rect.
-      final rect = Rect.fromLTRB(
+      final rawRect = Rect.fromLTRB(
         offsetX + box.x1 * imgW,
         offsetY + box.y1 * imgH,
         offsetX + box.x2 * imgW,
         offsetY + box.y2 * imgH,
       );
+
+      final rect = Rect.fromLTRB(
+        rawRect.left.clamp(0.0, size.width),
+        rawRect.top.clamp(0.0, size.height),
+        rawRect.right.clamp(0.0, size.width),
+        rawRect.bottom.clamp(0.0, size.height),
+      );
+      if (rect.width <= 1.0 || rect.height <= 1.0) continue;
 
       final color = AppConstants.classColors[detection.label] ?? Colors.red;
 
@@ -246,6 +254,15 @@ class _StaticBBoxPainter extends CustomPainter {
     Detection detection,
     Color color,
   ) {
+    const edgeEpsilon = 2.0;
+    final isNearFullImage = rect.left <= edgeEpsilon &&
+        rect.top <= edgeEpsilon &&
+        rect.right >= canvasSize.width - edgeEpsilon &&
+        rect.bottom >= canvasSize.height - edgeEpsilon;
+
+    final borderStroke = isNearFullImage ? 2.6 : 1.5;
+    final borderAlpha = isNearFullImage ? 245 : 180;
+
     // ── Subtle semi-transparent fill ────────────────────────────────────
     canvas.drawRRect(
       RRect.fromRectAndRadius(rect, const Radius.circular(6)),
@@ -256,10 +273,21 @@ class _StaticBBoxPainter extends CustomPainter {
     canvas.drawRRect(
       RRect.fromRectAndRadius(rect, const Radius.circular(6)),
       Paint()
-        ..color = color.withAlpha(180)
+        ..color = color.withAlpha(borderAlpha)
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 1.5,
+        ..strokeWidth = borderStroke,
     );
+
+    if (isNearFullImage && rect.width > 6.0 && rect.height > 6.0) {
+      final inset = rect.deflate(1.5);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(inset, const Radius.circular(6)),
+        Paint()
+          ..color = color.withAlpha(220)
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = 1.5,
+      );
+    }
 
     // ── Corner accent brackets ──────────────────────────────────────────
     final Paint bracketPaint = Paint()
@@ -326,8 +354,11 @@ class _StaticBBoxPainter extends CustomPainter {
 
     final double pillW = tp.width + padding * 2;
     final double pillH = tp.height + padding * 2;
-    final double pillX = rect.left.clamp(0.0, canvasSize.width - pillW);
-    final double pillTop = (rect.top - pillH - 2.0).clamp(0.0, double.infinity);
+    final double maxX = (canvasSize.width - pillW).clamp(0.0, double.infinity);
+    final double maxY =
+        (canvasSize.height - pillH - 2.0).clamp(6.0, double.infinity);
+    final double pillX = rect.left.clamp(0.0, maxX);
+    final double pillTop = (rect.top - pillH - 4.0).clamp(6.0, maxY);
 
     canvas.drawRRect(
       RRect.fromRectAndRadius(

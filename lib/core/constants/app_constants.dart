@@ -64,6 +64,10 @@ abstract final class AppConstants {
   /// Minimum class score to retain a box before NMS.
   static const double confidenceThreshold = 0.45;
 
+  /// Static image scan threshold.
+  /// Kept lower than realtime to recover recall on float32 exports.
+  static const double staticConfidenceThreshold = 0.25;
+
   /// IoU threshold for Non-Maximum Suppression.
   static const double iouThreshold = 0.50;
 

@@ -32,6 +32,8 @@ final class ModelDataSource {
   bool get isInitialised => _isInitialised;
   String get activeDelegate => _activeDelegate;
   int get inputSize => _inputSize;
+  int get outputRows => _outputRows;
+  int get outputCols => _outputCols;
 
   Future<void> initialise() async {
     if (_isInitialised) return;
@@ -109,7 +111,8 @@ final class ModelDataSource {
       throw ArgumentError(
         'Input tensor shape mismatch: expected flat length '
         '$expectedInputLength (1x$_inputSize'
-        'x$_inputSize' 'x3), got ${inputBuffer.length}.',
+        'x$_inputSize'
+        'x3), got ${inputBuffer.length}.',
       );
     }
 

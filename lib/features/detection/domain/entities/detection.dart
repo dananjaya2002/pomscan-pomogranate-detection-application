@@ -30,7 +30,8 @@ final class Detection extends Equatable {
   final DetectionClass cls;
 
   /// Returns confidence as a percentage string, e.g. `"94%"`.
-  String get confidencePercent => '${(confidence * 100).round()}%';
+  String get confidencePercent =>
+      '${(confidence.clamp(0.0, 1.0) * 100).round()}%';
 
   @override
   List<Object?> get props => [box, label, confidence, cls];
