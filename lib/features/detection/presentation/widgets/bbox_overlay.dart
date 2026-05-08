@@ -108,9 +108,8 @@ class _BBoxPainter extends CustomPainter {
       ..strokeWidth = _strokeWidth
       ..strokeCap = StrokeCap.square;
 
-    final double cl = _cornerLen
-        .clamp(12.0, 30.0)
-        .clamp(0.0, rect.width * 0.35);
+    final double cl =
+        _cornerLen.clamp(12.0, 30.0).clamp(0.0, rect.width * 0.35);
     final double cs = cl.clamp(0.0, rect.height * 0.35);
 
     // Top-left
@@ -144,8 +143,7 @@ class _BBoxPainter extends CustomPainter {
   ) {
     // Format: "Ripe 92%" — capitalise first letter and merge with confidence
     final rawLabel = detection.label.replaceAll('_', '-');
-    final displayLabel =
-        rawLabel[0].toUpperCase() + rawLabel.substring(1);
+    final displayLabel = rawLabel[0].toUpperCase() + rawLabel.substring(1);
     final String text = '$displayLabel  ${detection.confidencePercent}';
 
     const double padding = 5.0;

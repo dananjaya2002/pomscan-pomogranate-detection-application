@@ -3,14 +3,9 @@
 /// [DetectionNotifier] owns the frame-to-detection lifecycle:
 ///   camera image stream → frame-skip throttle → async inference → NMS
 ///   → state update → UI rebuild.
-///
-/// FPS is computed with a rolling timestamp window over the last
-/// [_kFpsWindow] processed frames, so it reflects current throughput
-/// rather than a cumulative average that drifts lower over time.
 library;
 
 import 'dart:async';
-import 'dart:collection';
 import 'dart:math' as math;
 
 import 'package:camera/camera.dart';
@@ -31,22 +26,22 @@ import 'camera_provider.dart';
 final class DetectionState {
   const DetectionState({
     this.detections = const [],
-    this.fps = 0.0,
+    this.inferenceLatencyMs = 0.0,
     this.isScanActive = false,
   });
 
   final List<Detection> detections;
-  final double fps;
+  final double inferenceLatencyMs;
   final bool isScanActive;
 
   DetectionState copyWith({
     List<Detection>? detections,
-    double? fps,
+    double? inferenceLatencyMs,
     bool? isScanActive,
   }) =>
       DetectionState(
         detections: detections ?? this.detections,
-        fps: fps ?? this.fps,
+        inferenceLatencyMs: inferenceLatencyMs ?? this.inferenceLatencyMs,
         isScanActive: isScanActive ?? this.isScanActive,
       );
 }
@@ -66,13 +61,7 @@ final class DetectionNotifier extends StateNotifier<DetectionState> {
   int _frameCounter = 0;
   int _dynamicFrameSkip = AppConstants.frameSkip;
   bool _inferenceBusy = false;
-
-  /// Keeps the millisecond timestamps of the last [_kFpsWindow] processed
-  /// frames.  FPS = (window_size − 1) / (newest_ts − oldest_ts) in seconds.
-  final Queue<int> _frameTimestamps = Queue();
-
-  /// Maximum number of timestamps to keep in the rolling window.
-  static const int _kFpsWindow = 12;
+  static const int _maxAdaptiveFrameSkip = 12;
 
   // ── Public API ──────────────────────────────────────────────────────────
 
@@ -84,7 +73,6 @@ final class DetectionNotifier extends StateNotifier<DetectionState> {
     _frameCounter = 0;
     _dynamicFrameSkip = AppConstants.frameSkip;
     _inferenceBusy = false;
-    _frameTimestamps.clear();
     if (mounted) {
       state = state.copyWith(isScanActive: false);
     }
@@ -97,7 +85,6 @@ final class DetectionNotifier extends StateNotifier<DetectionState> {
   Future<void> stopDetecting() async {
     _inferenceBusy = false;
     _dynamicFrameSkip = AppConstants.frameSkip;
-    _frameTimestamps.clear();
     try {
       await _ref.read(cameraProvider.notifier).stopImageStream();
     } catch (_) {
@@ -106,7 +93,7 @@ final class DetectionNotifier extends StateNotifier<DetectionState> {
     if (mounted) {
       state = state.copyWith(
         detections: const [],
-        fps: 0.0,
+        inferenceLatencyMs: 0.0,
         isScanActive: false,
       );
     }
@@ -119,7 +106,7 @@ final class DetectionNotifier extends StateNotifier<DetectionState> {
 
   void stopScan() {
     if (!mounted || !state.isScanActive) return;
-    state = state.copyWith(isScanActive: false, fps: 0.0);
+    state = state.copyWith(isScanActive: false, inferenceLatencyMs: 0.0);
   }
 
   void toggleScan() {
@@ -139,7 +126,7 @@ final class DetectionNotifier extends StateNotifier<DetectionState> {
     // Throttle: process every Nth frame (adaptive under load).
     final settings = _ref.read(settingsProvider).valueOrNull;
     final baseFrameSkip =
-        settings?.performanceMode.frameSkip ?? AppConstants.frameSkip;
+        settings?.realtimeFrameInterval.frames ?? AppConstants.frameSkip;
     final effectiveFrameSkip = math.max(baseFrameSkip, _dynamicFrameSkip);
     _frameCounter++;
     if (_frameCounter % effectiveFrameSkip != 0) return;
@@ -170,32 +157,36 @@ final class DetectionNotifier extends StateNotifier<DetectionState> {
         preprocessSize: settings?.modelInputSize.pixels,
       ).timeout(const Duration(milliseconds: 750));
 
-      final elapsedMs = DateTime.now().millisecondsSinceEpoch - startedAt;
-      _adaptFrameSkip(elapsedMs, settings?.performanceMode.frameSkip);
+      final cycleElapsedMs = DateTime.now().millisecondsSinceEpoch - startedAt;
+      final modelLatencyMs =
+          _ref.read(modelDataSourceProvider).lastInferenceLatencyMs;
+      final baseFrameSkip =
+          settings?.realtimeFrameInterval.frames ?? AppConstants.frameSkip;
 
-      // Rolling-window FPS—record this frame's timestamp.
-      final now = DateTime.now().millisecondsSinceEpoch;
-      _frameTimestamps.addLast(now);
-      if (_frameTimestamps.length > _kFpsWindow) _frameTimestamps.removeFirst();
-
-      double fps = state.fps;
-      if (_frameTimestamps.length >= 2) {
-        final elapsedSec =
-            (_frameTimestamps.last - _frameTimestamps.first) / 1000.0;
-        if (elapsedSec > 0) {
-          fps = (_frameTimestamps.length - 1) / elapsedSec;
-        }
+      if (settings?.adaptiveFrameSkipping ?? true) {
+        _adaptFrameSkip(modelLatencyMs, settings?.realtimeFrameInterval.frames);
+      } else {
+        _dynamicFrameSkip = baseFrameSkip;
       }
 
       if (mounted) {
-        final fpsChanged = (fps - state.fps).abs() >= 1.0;
-        if (_detectionsChanged(detections, state.detections) || fpsChanged) {
-          state = state.copyWith(detections: detections, fps: fps);
+        final latency =
+            modelLatencyMs > 0 ? modelLatencyMs : cycleElapsedMs.toDouble();
+        final latencyChanged =
+            (latency - state.inferenceLatencyMs).abs() >= 3.0;
+        if (_detectionsChanged(detections, state.detections) ||
+            latencyChanged) {
+          state = state.copyWith(
+            detections: detections,
+            inferenceLatencyMs: latency,
+          );
         }
       }
     } on TimeoutException {
       final settings = _ref.read(settingsProvider).valueOrNull;
-      _adaptFrameSkip(1200, settings?.performanceMode.frameSkip);
+      if (settings?.adaptiveFrameSkipping ?? true) {
+        _adaptFrameSkip(1200, settings?.realtimeFrameInterval.frames);
+      }
     } catch (_) {
       // Keep stream alive by swallowing transient inference failures.
     } finally {
@@ -203,14 +194,16 @@ final class DetectionNotifier extends StateNotifier<DetectionState> {
     }
   }
 
-  void _adaptFrameSkip(int inferenceMs, int? baseSkipOverride) {
+  void _adaptFrameSkip(double inferenceMs, int? baseSkipOverride) {
     final base = baseSkipOverride ?? AppConstants.frameSkip;
-    if (inferenceMs >= 300) {
-      _dynamicFrameSkip = (_dynamicFrameSkip + 1).clamp(base, 6);
+    if (inferenceMs >= 260) {
+      _dynamicFrameSkip =
+          (_dynamicFrameSkip + 1).clamp(base, _maxAdaptiveFrameSkip);
       return;
     }
-    if (inferenceMs <= 120) {
-      _dynamicFrameSkip = (_dynamicFrameSkip - 1).clamp(base, 6);
+    if (inferenceMs <= 140) {
+      _dynamicFrameSkip =
+          (_dynamicFrameSkip - 1).clamp(base, _maxAdaptiveFrameSkip);
     }
   }
 
