@@ -70,8 +70,8 @@ class InfoDetailPage extends StatelessWidget {
                     child: Text(
                       item.description,
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                            color: AppColors.textSecondary,
+                          ),
                     ),
                   ),
 
@@ -83,8 +83,8 @@ class InfoDetailPage extends StatelessWidget {
                       child: Text(
                         entry.value as String,
                         style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                              color: AppColors.textSecondary,
+                            ),
                       ),
                     ),
 
@@ -94,10 +94,9 @@ class InfoDetailPage extends StatelessWidget {
                       title: 'Key Tips',
                       accent: accent,
                       child: Column(
-                        children:
-                            item.tips
-                                .map((tip) => _TipRow(tip: tip, accent: accent))
-                                .toList(),
+                        children: item.tips
+                            .map((tip) => _TipRow(tip: tip, accent: accent))
+                            .toList(),
                       ),
                     ),
 
@@ -196,9 +195,9 @@ class _TipRow extends StatelessWidget {
             child: Text(
               tip,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.textSecondary,
-                height: 1.5,
-              ),
+                    color: AppColors.textSecondary,
+                    height: 1.5,
+                  ),
             ),
           ),
         ],
