@@ -76,7 +76,7 @@ abstract final class AppConstants {
 
   // ── Frame pipeline ─────────────────────────────────────────────────────────
   /// Process every Nth camera frame to reduce CPU/GPU load.
-  static const int frameSkip = 3;
+  static const int frameSkip = 5;
 
   // ── Overlay colours ────────────────────────────────────────────────────────
   static const Map<String, Color> classColors = {
