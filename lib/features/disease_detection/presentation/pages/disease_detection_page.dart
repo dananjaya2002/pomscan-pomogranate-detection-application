@@ -75,10 +75,7 @@ class DiseaseDetectionPage extends ConsumerWidget {
                     height: 1.4,
                   ),
                 ),
-              )
-                  .animate()
-                  .fade(duration: 350.ms)
-                  .slideY(begin: 0.05, end: 0),
+              ).animate().fade(duration: 350.ms).slideY(begin: 0.05, end: 0),
               const SizedBox(height: 16),
               // Image source picker
               _ImageSourceRow(
