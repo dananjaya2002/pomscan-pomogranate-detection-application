@@ -52,13 +52,13 @@ class _SplashPageState extends State<SplashPage>
         curve: const Interval(0.25, 0.55, curve: Curves.easeIn),
       ),
     );
-    _titleSlide = Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero)
-        .animate(
-          CurvedAnimation(
-            parent: _ctrl,
-            curve: const Interval(0.25, 0.55, curve: Curves.easeOut),
-          ),
-        );
+    _titleSlide =
+        Tween<Offset>(begin: const Offset(0, 0.3), end: Offset.zero).animate(
+      CurvedAnimation(
+        parent: _ctrl,
+        curve: const Interval(0.25, 0.55, curve: Curves.easeOut),
+      ),
+    );
     _taglineFade = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _ctrl,

@@ -29,6 +29,11 @@ final class SettingsNotifier extends AsyncNotifier<AppSettings> {
   Future<void> updatePerformanceMode(PerformanceMode mode) =>
       _update((s) => s.copyWith(performanceMode: mode));
 
+  Future<void> updateRealtimeFrameInterval(RealtimeFrameInterval interval) =>
+      _update((s) => s.copyWith(realtimeFrameInterval: interval));
+  Future<void> updateAdaptiveFrameSkipping(bool enabled) =>
+      _update((s) => s.copyWith(adaptiveFrameSkipping: enabled));
+
   Future<void> updateConfidenceThreshold(double value) =>
       _update((s) => s.copyWith(confidenceThreshold: value));
 

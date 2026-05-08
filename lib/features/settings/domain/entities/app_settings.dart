@@ -24,6 +24,26 @@ enum PerformanceMode {
   final String hint;
 }
 
+/// Baseline interval for realtime inference.
+///
+/// `every5` means run inference on every 5th camera frame,
+/// while `every10` lowers load further at the cost of freshness.
+enum RealtimeFrameInterval {
+  every5(frames: 5, label: 'Every 5 frames', hint: 'Balanced for most phones'),
+  every10(
+      frames: 10, label: 'Every 10 frames', hint: 'Lowest load, more delay');
+
+  const RealtimeFrameInterval({
+    required this.frames,
+    required this.label,
+    required this.hint,
+  });
+
+  final int frames;
+  final String label;
+  final String hint;
+}
+
 /// Camera quality preset shown to the user.
 enum CameraQuality {
   low(preset: ResolutionPreset.low, label: 'Low', hint: 'Fastest, less detail'),
@@ -75,11 +95,12 @@ enum ModelInputSize {
   final String hint;
 }
 
-
 final class AppSettings {
   const AppSettings({
     this.cameraQuality = CameraQuality.high,
     this.performanceMode = PerformanceMode.balanced,
+    this.realtimeFrameInterval = RealtimeFrameInterval.every5,
+    this.adaptiveFrameSkipping = true,
     this.confidenceThreshold = 0.45,
     this.maxDetections = 10,
     this.modelInputSize = ModelInputSize.balanced,
@@ -87,6 +108,8 @@ final class AppSettings {
 
   final CameraQuality cameraQuality;
   final PerformanceMode performanceMode;
+  final RealtimeFrameInterval realtimeFrameInterval;
+  final bool adaptiveFrameSkipping;
 
   /// Minimum confidence score [0.0–1.0] to show a detection box.
   final double confidenceThreshold;
@@ -100,14 +123,21 @@ final class AppSettings {
   AppSettings copyWith({
     CameraQuality? cameraQuality,
     PerformanceMode? performanceMode,
+    RealtimeFrameInterval? realtimeFrameInterval,
+    bool? adaptiveFrameSkipping,
     double? confidenceThreshold,
     int? maxDetections,
     ModelInputSize? modelInputSize,
-  }) => AppSettings(
-    cameraQuality: cameraQuality ?? this.cameraQuality,
-    performanceMode: performanceMode ?? this.performanceMode,
-    confidenceThreshold: confidenceThreshold ?? this.confidenceThreshold,
-    maxDetections: maxDetections ?? this.maxDetections,
-    modelInputSize: modelInputSize ?? this.modelInputSize,
-  );
+  }) =>
+      AppSettings(
+        cameraQuality: cameraQuality ?? this.cameraQuality,
+        performanceMode: performanceMode ?? this.performanceMode,
+        realtimeFrameInterval:
+            realtimeFrameInterval ?? this.realtimeFrameInterval,
+        adaptiveFrameSkipping:
+            adaptiveFrameSkipping ?? this.adaptiveFrameSkipping,
+        confidenceThreshold: confidenceThreshold ?? this.confidenceThreshold,
+        maxDetections: maxDetections ?? this.maxDetections,
+        modelInputSize: modelInputSize ?? this.modelInputSize,
+      );
 }

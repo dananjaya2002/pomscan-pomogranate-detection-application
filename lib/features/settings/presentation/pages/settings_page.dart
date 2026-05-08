@@ -38,10 +38,8 @@ class SettingsPage extends ConsumerWidget {
                 selected: settings.cameraQuality,
                 labelOf: (v) => v.label,
                 hintOf: (v) => v.hint,
-                onChanged:
-                    (v) => ref
-                        .read(settingsProvider.notifier)
-                        .updateCameraQuality(v),
+                onChanged: (v) =>
+                    ref.read(settingsProvider.notifier).updateCameraQuality(v),
               ),
               _Divider(),
               _SegmentedRow<PerformanceMode>(
@@ -51,10 +49,32 @@ class SettingsPage extends ConsumerWidget {
                 selected: settings.performanceMode,
                 labelOf: (v) => v.label,
                 hintOf: (v) => v.hint,
-                onChanged:
-                    (v) => ref
-                        .read(settingsProvider.notifier)
-                        .updatePerformanceMode(v),
+                onChanged: (v) => ref
+                    .read(settingsProvider.notifier)
+                    .updatePerformanceMode(v),
+              ),
+              _Divider(),
+              _SegmentedRow<RealtimeFrameInterval>(
+                label: 'Realtime Frame Interval',
+                description:
+                    'Run inference on every 5th or 10th frame to reduce load.',
+                values: RealtimeFrameInterval.values,
+                selected: settings.realtimeFrameInterval,
+                labelOf: (v) => v.label,
+                hintOf: (v) => v.hint,
+                onChanged: (v) => ref
+                    .read(settingsProvider.notifier)
+                    .updateRealtimeFrameInterval(v),
+              ),
+              _Divider(),
+              _SwitchRow(
+                label: 'Adaptive Frame Skipping',
+                description:
+                    'Automatically increase frame interval when latency is high.',
+                value: settings.adaptiveFrameSkipping,
+                onChanged: (v) => ref
+                    .read(settingsProvider.notifier)
+                    .updateAdaptiveFrameSkipping(v),
               ),
               _Divider(),
               _SegmentedRow<ModelInputSize>(
@@ -65,10 +85,8 @@ class SettingsPage extends ConsumerWidget {
                 selected: settings.modelInputSize,
                 labelOf: (v) => v.label,
                 hintOf: (v) => v.hint,
-                onChanged:
-                    (v) => ref
-                        .read(settingsProvider.notifier)
-                        .updateModelInputSize(v),
+                onChanged: (v) =>
+                    ref.read(settingsProvider.notifier).updateModelInputSize(v),
               ),
             ],
           ),
@@ -87,10 +105,9 @@ class SettingsPage extends ConsumerWidget {
                 divisions: 12,
                 displayValue:
                     '${(settings.confidenceThreshold * 100).round()}%',
-                onChanged:
-                    (v) => ref
-                        .read(settingsProvider.notifier)
-                        .updateConfidenceThreshold(v),
+                onChanged: (v) => ref
+                    .read(settingsProvider.notifier)
+                    .updateConfidenceThreshold(v),
               ),
               _Divider(),
               _SliderRow(
@@ -101,10 +118,9 @@ class SettingsPage extends ConsumerWidget {
                 max: 10,
                 divisions: 9,
                 displayValue: '${settings.maxDetections}',
-                onChanged:
-                    (v) => ref
-                        .read(settingsProvider.notifier)
-                        .updateMaxDetections(v.round()),
+                onChanged: (v) => ref
+                    .read(settingsProvider.notifier)
+                    .updateMaxDetections(v.round()),
               ),
             ],
           ),
@@ -217,71 +233,66 @@ class _SegmentedRow<T> extends StatelessWidget {
           Text(description, style: Theme.of(context).textTheme.bodySmall),
           const SizedBox(height: 12),
           Row(
-            children:
-                values.map((v) {
-                  final isSelected = v == selected;
-                  return Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: v == values.last ? 0 : 6),
-                      child: InkWell(
+            children: values.map((v) {
+              final isSelected = v == selected;
+              return Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(right: v == values.last ? 0 : 6),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(8),
+                    onTap: () => onChanged(v),
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 10,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppColors.primaryDark
+                            : AppColors.surfaceVariant,
                         borderRadius: BorderRadius.circular(8),
-                        onTap: () => onChanged(v),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 180),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                isSelected
-                                    ? AppColors.primaryDark
-                                    : AppColors.surfaceVariant,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color:
-                                  isSelected
-                                      ? AppColors.primaryLight
-                                      : Colors.transparent,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                labelOf(v),
-                                style: TextStyle(
-                                  color:
-                                      isSelected
-                                          ? AppColors.primaryLight
-                                          : AppColors.textSecondary,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                hintOf(v),
-                                style: TextStyle(
-                                  color:
-                                      isSelected
-                                          ? AppColors.primaryLight.withAlpha(
-                                            153,
-                                          )
-                                          : AppColors.textMuted,
-                                  fontSize: 9,
-                                ),
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                              ),
-                            ],
-                          ),
+                        border: Border.all(
+                          color: isSelected
+                              ? AppColors.primaryLight
+                              : Colors.transparent,
+                          width: 1.5,
                         ),
                       ),
+                      child: Column(
+                        children: [
+                          Text(
+                            labelOf(v),
+                            style: TextStyle(
+                              color: isSelected
+                                  ? AppColors.primaryLight
+                                  : AppColors.textSecondary,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            hintOf(v),
+                            style: TextStyle(
+                              color: isSelected
+                                  ? AppColors.primaryLight.withAlpha(
+                                      153,
+                                    )
+                                  : AppColors.textMuted,
+                              fontSize: 9,
+                            ),
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 2,
+                          ),
+                        ],
+                      ),
                     ),
-                  );
-                }).toList(),
+                  ),
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),
@@ -350,6 +361,43 @@ class _SliderRow extends StatelessWidget {
             divisions: divisions,
             onChanged: onChanged,
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SwitchRow extends StatelessWidget {
+  const _SwitchRow({
+    required this.label,
+    required this.description,
+    required this.value,
+    required this.onChanged,
+  });
+
+  final String label;
+  final String description;
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 3),
+                Text(description, style: Theme.of(context).textTheme.bodySmall),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Switch.adaptive(value: value, onChanged: onChanged),
         ],
       ),
     );
