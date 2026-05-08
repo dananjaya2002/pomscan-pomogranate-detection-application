@@ -1,4 +1,4 @@
-﻿/// Concrete implementation of [DetectionRepository].
+/// Concrete implementation of [DetectionRepository].
 ///
 /// Orchestrates [CameraDataSource]  [ModelDataSource].
 library;
@@ -243,21 +243,15 @@ final class DetectionRepositoryImpl implements DetectionRepository {
           continue;
         }
 
-        final looksNormalised =
-            rawX1.abs() <= 1.5 && rawY1.abs() <= 1.5 && rawX2.abs() <= 1.5 && rawY2.abs() <= 1.5;
+        final looksNormalised = rawX1.abs() <= 1.5 &&
+            rawY1.abs() <= 1.5 &&
+            rawX2.abs() <= 1.5 &&
+            rawY2.abs() <= 1.5;
 
-        final modelX1 = looksNormalised
-            ? rawX1
-            : rawX1 / modelInputSize;
-        final modelY1 = looksNormalised
-            ? rawY1
-            : rawY1 / modelInputSize;
-        final modelX2 = looksNormalised
-            ? rawX2
-            : rawX2 / modelInputSize;
-        final modelY2 = looksNormalised
-            ? rawY2
-            : rawY2 / modelInputSize;
+        final modelX1 = looksNormalised ? rawX1 : rawX1 / modelInputSize;
+        final modelY1 = looksNormalised ? rawY1 : rawY1 / modelInputSize;
+        final modelX2 = looksNormalised ? rawX2 : rawX2 / modelInputSize;
+        final modelY2 = looksNormalised ? rawY2 : rawY2 / modelInputSize;
 
         final left = math.min(modelX1, modelX2).clamp(0.0, 1.0);
         final top = math.min(modelY1, modelY2).clamp(0.0, 1.0);
