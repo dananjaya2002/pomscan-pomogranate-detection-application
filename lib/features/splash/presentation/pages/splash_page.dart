@@ -27,7 +27,7 @@ class _SplashPageState extends State<SplashPage>
   @override
   void initState() {
     super.initState();
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
     _ctrl = AnimationController(
       vsync: this,
@@ -128,25 +128,48 @@ class _SplashPageState extends State<SplashPage>
                   child: ScaleTransition(
                     scale: _iconScale,
                     child: Container(
-                      width: 96,
-                      height: 96,
+                      width: 106,
+                      height: 106,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [AppColors.accentMuted, AppColors.accent],
+                          colors: [AppColors.primaryDark, AppColors.primary],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),
-                        borderRadius: BorderRadius.circular(26),
+                        borderRadius: BorderRadius.circular(28),
+                        border: Border.all(
+                          color: Colors.white.withAlpha(40),
+                          width: 1.2,
+                        ),
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.accent.withAlpha(100),
+                            color: AppColors.primary.withAlpha(90),
                             blurRadius: 32,
                             offset: const Offset(0, 10),
                           ),
                         ],
                       ),
-                      child: const Center(
-                        child: Text('🍎', style: TextStyle(fontSize: 48)),
+                      child: const Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(
+                            Icons.spa_rounded,
+                            color: Colors.white,
+                            size: 42,
+                          ),
+                          Positioned(
+                            bottom: 18,
+                            child: Text(
+                              'PS',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: 0.4,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -177,7 +200,7 @@ class _SplashPageState extends State<SplashPage>
                 FadeTransition(
                   opacity: _taglineFade,
                   child: const Text(
-                    'AI-Powered Ripeness Detection',
+                    'Pomegranate Ripeness and Disease Assistant',
                     style: TextStyle(
                       color: AppColors.textMuted,
                       fontSize: 14,
