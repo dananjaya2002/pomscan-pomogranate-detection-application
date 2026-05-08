@@ -12,42 +12,63 @@ class StaticScanCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.35)),
+        gradient: LinearGradient(
+          colors: [
+            AppColors.primaryDark.withValues(alpha: 0.92),
+            AppColors.primary.withValues(alpha: 0.92),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(AppDimens.radiusLarge),
+        border:
+            Border.all(color: AppColors.primaryLight.withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.2),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+            color: AppColors.primary.withValues(alpha: 0.3),
+            blurRadius: 22,
+            offset: const Offset(0, 9),
           ),
         ],
       ),
-      padding: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(22),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Text('🖼️', style: TextStyle(fontSize: 32)),
+              Container(
+                width: 54,
+                height: 54,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.14),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.eco_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Static Image Scan',
+                      'Ripeness Scan',
                       style: TextStyle(
-                        color: AppColors.textPrimary,
-                        fontSize: 18,
+                        color: Colors.white,
+                        fontSize: 21,
                         fontWeight: FontWeight.w700,
+                        letterSpacing: -0.3,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      'Capture or choose photos and run\nFloat32 high-accuracy detection',
+                    const Text(
+                      'Identify ripe, semi-ripe, and unripe fruits\nfrom one photo in seconds.',
                       style: TextStyle(
-                        color: AppColors.textMuted,
+                        color: Colors.white70,
                         fontSize: 13,
                         height: 1.4,
                       ),
@@ -58,23 +79,33 @@ class StaticScanCard extends StatelessWidget {
               ModelChip(ready: modelReady),
             ],
           ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: const [
+              _FeatureChip(label: 'Ripe'),
+              _FeatureChip(label: 'Semi-ripe'),
+              _FeatureChip(label: 'Unripe'),
+            ],
+          ),
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 14),
+                backgroundColor: Colors.white,
+                foregroundColor: AppColors.primaryDark,
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 elevation: 0,
               ),
               icon: const Icon(Icons.image_search_rounded, size: 20),
               label: const Text(
-                'Open Static Scan (Float32)',
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                'Start Ripeness Scan',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
               onPressed: () {
                 Navigator.of(context).push(
@@ -91,5 +122,31 @@ class StaticScanCard extends StatelessWidget {
         .animate()
         .fade(duration: 400.ms, delay: 100.ms)
         .slideY(begin: 0.05, end: 0, curve: Curves.easeOutQuad);
+  }
+}
+
+class _FeatureChip extends StatelessWidget {
+  const _FeatureChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.24)),
+      ),
+      child: Text(
+        label,
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+        ),
+      ),
+    );
   }
 }
