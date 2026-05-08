@@ -78,7 +78,8 @@ final class DiseaseModelDataSource {
       _activeDelegate = 'CPU';
       _logReady(threads);
     } catch (e, st) {
-      _log.e('Disease model load failed (CPU fallback)', error: e, stackTrace: st);
+      _log.e('Disease model load failed (CPU fallback)',
+          error: e, stackTrace: st);
       throw ModelFailure('Failed to load disease TFLite model: $e');
     }
   }

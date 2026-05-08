@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../providers/disease_detection_provider.dart';
@@ -37,8 +38,9 @@ class DiseaseDetectionPage extends ConsumerWidget {
           'Disease Detection',
           style: TextStyle(
             color: AppColors.textPrimary,
-            fontSize: 17,
-            fontWeight: FontWeight.w600,
+            fontSize: 18,
+            fontWeight: FontWeight.w700,
+            letterSpacing: -0.3,
           ),
         ),
         actions: [
@@ -54,41 +56,54 @@ class DiseaseDetectionPage extends ConsumerWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Image source picker
               _ImageSourceRow(
                 isProcessing: state.isProcessing,
-                onPickCamera: () =>
-                    notifier.pickAndDetect(ImageSource.camera),
+                onPickCamera: () => notifier.pickAndDetect(ImageSource.camera),
                 onPickGallery: () =>
                     notifier.pickAndDetect(ImageSource.gallery),
-              ),
-              const SizedBox(height: 20),
+              )
+                  .animate()
+                  .fade(duration: 400.ms)
+                  .slideY(begin: 0.1, end: 0, curve: Curves.easeOutQuad),
+              const SizedBox(height: 24),
               // Selected image preview
               if (state.pickedImage != null) ...[
                 _ImagePreview(
                   file: state.pickedImage!,
                   isProcessing: state.isProcessing,
-                ),
-                const SizedBox(height: 20),
+                ).animate().fade(duration: 400.ms).scale(
+                    begin: const Offset(0.95, 0.95),
+                    end: const Offset(1, 1),
+                    curve: Curves.easeOutQuad),
+                const SizedBox(height: 24),
               ],
               // Processing indicator
               if (state.isProcessing) ...[
-                const _AnalysingIndicator(),
-                const SizedBox(height: 20),
+                const _AnalysingIndicator().animate().fade(duration: 400.ms),
+                const SizedBox(height: 24),
               ],
               // Error message
               if (state.errorMessage != null && !state.isProcessing)
-                _ErrorBanner(message: state.errorMessage!),
+                _ErrorBanner(message: state.errorMessage!)
+                    .animate()
+                    .fade(duration: 400.ms)
+                    .shakeX(amount: 3),
               // Result card
               if (state.result != null && !state.isProcessing)
-                DiseaseResultCard(result: state.result!),
+                DiseaseResultCard(result: state.result!)
+                    .animate()
+                    .fade(duration: 400.ms)
+                    .slideY(begin: 0.1, end: 0, curve: Curves.easeOutQuad),
               // Empty state
               if (state.pickedImage == null && !state.isProcessing)
-                const _EmptyState(),
+                const _EmptyState()
+                    .animate()
+                    .fade(duration: 400.ms, delay: 200.ms),
             ],
           ),
         ),

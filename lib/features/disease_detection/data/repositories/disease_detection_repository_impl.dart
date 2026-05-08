@@ -40,9 +40,8 @@ final class DiseaseDetectionRepositoryImpl
     final image = img.decodeImage(bytes);
     if (image == null) throw StateError('Could not decode image bytes');
 
-    final size = _model.isInitialised
-        ? _model.inputSize
-        : AppConstants.diseaseInputSize;
+    final size =
+        _model.isInitialised ? _model.inputSize : AppConstants.diseaseInputSize;
 
     final resized = img.copyResize(
       image,

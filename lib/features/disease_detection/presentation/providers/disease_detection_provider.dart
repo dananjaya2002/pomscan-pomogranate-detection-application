@@ -24,8 +24,7 @@ final _diseaseRepositoryProvider = Provider<DiseaseDetectionRepositoryImpl>(
   ),
 );
 
-final runDiseaseDetectionUseCaseProvider =
-    Provider<RunDiseaseDetectionUseCase>(
+final runDiseaseDetectionUseCaseProvider = Provider<RunDiseaseDetectionUseCase>(
   (ref) => RunDiseaseDetectionUseCase(ref.watch(_diseaseRepositoryProvider)),
 );
 
