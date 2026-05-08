@@ -1,6 +1,6 @@
 /// Root detection screen.
 ///
-/// Composes the camera preview, bounding-box overlay, FPS counter,
+/// Composes the camera preview, bounding-box overlay, latency badge,
 /// and a bottom control bar in a full-screen [Stack].
 ///
 /// Detection lifecycle:
@@ -9,9 +9,12 @@
 ///   - App backgrounded → stream stopped; foregrounded → stream restarted.
 library;
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../providers/camera_provider.dart';
 import '../providers/detection_provider.dart';
@@ -27,7 +30,7 @@ import '../widgets/fps_counter.dart';
 /// Layout (bottom → top):
 ///   0. [CameraPreviewWidget]   — full-screen live feed
 ///   1. [BBoxOverlay]           — transparent detection overlay
-///   2. [FpsCounter]            — FPS badge (top-right)
+///   2. [FpsCounter]            — latency badge (top-right)
 ///   3. Bottom control bar      — torch toggle & info
 final class DetectionPage extends ConsumerStatefulWidget {
   const DetectionPage({super.key});
@@ -204,13 +207,13 @@ class _DetectionPageState extends ConsumerState<DetectionPage>
             // Layer 1: YOLO bounding-box overlay
             const BBoxOverlay(),
 
-            // Layer 2: FPS counter badge (top-left)
+            // Layer 2: latency badge (top-left)
             const FpsCounter(),
 
             // Layer 3: Model status badge (top-right)
             _ModelStatusBadge(loaded: modelLoaded, error: modelError),
 
-            // Layer 4: Back button (top-left, above FPS)
+            // Layer 4: Back button (top-left, above latency badge)
             Positioned(
               top: MediaQuery.of(context).padding.top + 8,
               left: 8,
@@ -259,65 +262,74 @@ class _ModelStatusBadge extends StatelessWidget {
     return Positioned(
       top: MediaQuery.of(context).padding.top + 12.0,
       right: 12.0,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-        decoration: BoxDecoration(
-          color: Colors.black.withAlpha(153),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: error
-                ? const Color(0xFFF44336).withAlpha(200)
-                : loaded
-                    ? const Color(0xFF4CAF50).withAlpha(160)
-                    : Colors.white.withAlpha(40),
-            width: 1.1,
-          ),
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (!loaded)
-              const SizedBox(
-                width: 9,
-                height: 9,
-                child: CircularProgressIndicator(
-                  strokeWidth: 1.5,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white54),
-                ),
-              )
-            else if (error)
-              const Icon(
-                Icons.error_outline_rounded,
-                size: 11,
-                color: Color(0xFFF44336),
-              )
-            else
-              const Icon(
-                Icons.check_circle_outline_rounded,
-                size: 11,
-                color: Color(0xFF4CAF50),
-              ),
-            const SizedBox(width: 5),
-            Text(
-              error
-                  ? 'INT8 Error'
-                  : loaded
-                      ? 'INT8 Ready'
-                      : 'Loading INT8…',
-              style: TextStyle(
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
                 color: error
-                    ? const Color(0xFFF44336)
+                    ? const Color(0xFFF44336).withValues(alpha: 0.8)
                     : loaded
-                        ? const Color(0xFF4CAF50)
-                        : Colors.white54,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                letterSpacing: 0.2,
+                        ? const Color(0xFF4CAF50).withValues(alpha: 0.6)
+                        : Colors.white.withValues(alpha: 0.2),
+                width: 1.1,
               ),
             ),
-          ],
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (!loaded)
+                  const SizedBox(
+                    width: 10,
+                    height: 10,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white70),
+                    ),
+                  )
+                else if (error)
+                  const Icon(
+                    Icons.error_outline_rounded,
+                    size: 14,
+                    color: Color(0xFFF44336),
+                  )
+                else
+                  const Icon(
+                    Icons.check_circle_outline_rounded,
+                    size: 14,
+                    color: Color(0xFF4CAF50),
+                  ),
+                const SizedBox(width: 6),
+                Text(
+                  error
+                      ? 'INT8 Error'
+                      : loaded
+                          ? 'INT8 Ready'
+                          : 'Loading INT8…',
+                  style: TextStyle(
+                    color: error
+                        ? const Color(0xFFF44336)
+                        : loaded
+                            ? const Color(0xFF4CAF50)
+                            : Colors.white70,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
+                    letterSpacing: 0.2,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
+      )
+          .animate()
+          .fade(duration: 300.ms)
+          .slideX(begin: 0.1, end: 0, curve: Curves.easeOut),
     );
   }
 }

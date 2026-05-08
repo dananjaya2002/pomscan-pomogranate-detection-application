@@ -47,7 +47,8 @@ final class CameraError extends CameraState {
 ///   4. Pause / resume the preview on app lifecycle changes.
 ///   5. Toggle the torch.
 final class CameraNotifier extends StateNotifier<CameraState> {
-  CameraNotifier(this._dataSource, this._ref) : super(const CameraInitializing());
+  CameraNotifier(this._dataSource, this._ref)
+      : super(const CameraInitializing());
 
   final CameraDataSource _dataSource;
   final Ref _ref;
@@ -77,7 +78,8 @@ final class CameraNotifier extends StateNotifier<CameraState> {
       // 2. Read the user’s chosen camera quality and pass it to the datasource
       //    so the CameraController is created at the correct resolution.
       final settings = _ref.read(settingsProvider).valueOrNull;
-      final resolution = settings?.cameraQuality.preset ?? ResolutionPreset.high;
+      final resolution =
+          settings?.cameraQuality.preset ?? ResolutionPreset.high;
 
       // 3. Hardware init
       await _dataSource.initialise(resolution: resolution);
