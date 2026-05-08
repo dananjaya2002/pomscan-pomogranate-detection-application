@@ -16,19 +16,14 @@ import '../../../../core/utils/frame_preprocessor.dart';
 import '../../domain/entities/bounding_box.dart';
 import '../../domain/entities/detection.dart';
 import '../../domain/repositories/detection_repository.dart';
-import '../datasources/camera_datasource.dart';
 import '../datasources/model_datasource.dart';
 
 final class DetectionRepositoryImpl implements DetectionRepository {
   DetectionRepositoryImpl({
     required ModelDataSource modelDataSource,
-    required CameraDataSource cameraDataSource,
-  })  : _model = modelDataSource,
-        _camera = cameraDataSource;
+  }) : _model = modelDataSource;
 
   final ModelDataSource _model;
-  // ignore: unused_field
-  final CameraDataSource _camera;
 
   @override
   Future<void> initialise() => _model.initialise();
