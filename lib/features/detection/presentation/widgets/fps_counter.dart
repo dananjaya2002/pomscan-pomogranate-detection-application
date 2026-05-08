@@ -1,10 +1,10 @@
-/// FPS counter badge widget — top-left overlay.
+/// Inference latency badge widget — top-left overlay.
 ///
-/// Colour-codes the badge based on throughput:
-///   • green  ≥ 15 fps  — smooth
-///   • amber   5–14 fps — acceptable
-///   • red    < 5 fps   — too slow
-///   • grey   0.0       — not yet measuring
+/// Colour-codes the badge based on latency:
+///   • green   ≤ 120 ms — fast
+///   • amber 121–250 ms — acceptable
+///   • red     > 250 ms — slow
+///   • grey      0.0    — not yet measuring
 library;
 
 import 'package:flutter/material.dart';
@@ -12,23 +12,28 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../providers/detection_provider.dart';
 
-/// Small overlay badge showing real-time inference FPS.
+/// Small overlay badge showing real-time inference latency.
 final class FpsCounter extends ConsumerWidget {
   const FpsCounter({super.key});
 
-  static Color _badgeColor(double fps) {
-    if (fps <= 0.0) return const Color(0xFF607D8B); // grey — no reading yet
-    if (fps < 5) return const Color(0xFFF44336);    // red
-    if (fps < 15) return const Color(0xFFFF9800);   // amber
-    return const Color(0xFF4CAF50);                 // green
+  static Color _badgeColor(double latencyMs) {
+    if (latencyMs <= 0.0) {
+      return const Color(0xFF607D8B); // grey — no reading yet
+    }
+    if (latencyMs > 250) return const Color(0xFFF44336); // red
+    if (latencyMs > 120) return const Color(0xFFFF9800); // amber
+    return const Color(0xFF4CAF50); // green
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final fps = ref.watch(detectionProvider.select((s) => s.fps));
+    final latencyMs = ref.watch(
+      detectionProvider.select((s) => s.inferenceLatencyMs),
+    );
 
-    final color = _badgeColor(fps);
-    final label = fps <= 0.0 ? '— FPS' : '${fps.toStringAsFixed(1)} FPS';
+    final color = _badgeColor(latencyMs);
+    final label =
+        latencyMs <= 0.0 ? '— Latency' : '${latencyMs.toStringAsFixed(0)} ms';
 
     return Positioned(
       top: MediaQuery.of(context).padding.top + 52.0,

@@ -28,12 +28,14 @@ final class ModelDataSource {
   int _inputSize = AppConstants.inputSize;
   int _outputRows = AppConstants.numClasses + 4;
   int _outputCols = 8400;
+  double _lastInferenceLatencyMs = 0.0;
 
   bool get isInitialised => _isInitialised;
   String get activeDelegate => _activeDelegate;
   int get inputSize => _inputSize;
   int get outputRows => _outputRows;
   int get outputCols => _outputCols;
+  double get lastInferenceLatencyMs => _lastInferenceLatencyMs;
 
   Future<void> initialise() async {
     if (_isInitialised) return;
@@ -132,7 +134,10 @@ final class ModelDataSource {
     );
 
     try {
+      final stopwatch = Stopwatch()..start();
       _interpreter!.run(input, output);
+      stopwatch.stop();
+      _lastInferenceLatencyMs = stopwatch.elapsedMicroseconds / 1000.0;
     } on ArgumentError catch (e) {
       throw StateError('Model inference failed due to shape mismatch: $e');
     }
