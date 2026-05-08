@@ -35,7 +35,19 @@ class DiseaseHeroCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Text('🔬', style: TextStyle(fontSize: 34)),
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.13),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Icon(
+                  Icons.medical_services_rounded,
+                  color: Colors.white,
+                  size: 30,
+                ),
+              ),
               const SizedBox(width: 16),
               Expanded(
                 child: Column(
@@ -52,7 +64,7 @@ class DiseaseHeroCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Identify pomegranate diseases\nfrom a photo',
+                      'Check disease symptoms from a photo\nand get care guidance',
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.85),
                         fontSize: 14,
@@ -81,7 +93,7 @@ class DiseaseHeroCard extends StatelessWidget {
               ),
               icon: const Icon(Icons.biotech_rounded, size: 22),
               label: const Text(
-                'Analyse Image',
+                'Start Disease Scan',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
               onPressed: () {

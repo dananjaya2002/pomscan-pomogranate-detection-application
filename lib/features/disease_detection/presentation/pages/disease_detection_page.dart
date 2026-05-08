@@ -35,7 +35,7 @@ class DiseaseDetectionPage extends ConsumerWidget {
           onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
-          'Disease Detection',
+          'Disease Scan',
           style: TextStyle(
             color: AppColors.textPrimary,
             fontSize: 18,
@@ -60,6 +60,26 @@ class DiseaseDetectionPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
+                  border: Border.all(color: AppColors.cardBorder),
+                ),
+                child: const Text(
+                  'Use a clear leaf or fruit photo. The scan identifies likely disease type and provides treatment guidance.',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                    height: 1.4,
+                  ),
+                ),
+              )
+                  .animate()
+                  .fade(duration: 350.ms)
+                  .slideY(begin: 0.05, end: 0),
+              const SizedBox(height: 16),
               // Image source picker
               _ImageSourceRow(
                 isProcessing: state.isProcessing,
@@ -314,7 +334,7 @@ class _EmptyState extends StatelessWidget {
           Text('🔬', style: TextStyle(fontSize: 56)),
           SizedBox(height: 16),
           Text(
-            'Select an image to detect diseases',
+            'Select an image to check diseases',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppColors.textSecondary,
@@ -323,7 +343,7 @@ class _EmptyState extends StatelessWidget {
           ),
           SizedBox(height: 8),
           Text(
-            'Use Camera or Gallery above to pick\na pomegranate photo.',
+            'Use Camera or Gallery above to pick\na clear pomegranate photo.',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: AppColors.textMuted,
