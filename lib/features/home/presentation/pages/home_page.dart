@@ -6,14 +6,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../core/theme/app_theme.dart';
-import '../../../detection/presentation/providers/detection_provider.dart';
+import '../../../detection/presentation/providers/static_detection_provider.dart';
 import '../../../disease_detection/presentation/providers/disease_detection_provider.dart';
 
 // Extracted widgets
-import '../widgets/realtime_detection_card.dart';
 import '../widgets/static_scan_card.dart';
 import '../widgets/disease_hero_card.dart';
 import '../widgets/knowledge_base_cards.dart';
+import '../widgets/onboarding_tips_card.dart';
 import '../widgets/quick_access_grid.dart';
 
 class HomePage extends ConsumerWidget {
@@ -21,8 +21,9 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final modelState = ref.watch(modelInitProvider);
-    final modelReady = modelState.hasValue && !modelState.hasError;
+    final staticModelState = ref.watch(staticModelInitProvider);
+    final staticModelReady =
+      staticModelState.hasValue && !staticModelState.hasError;
 
     final diseaseModelState = ref.watch(diseaseModelInitProvider);
     final diseaseModelReady =
@@ -39,15 +40,15 @@ class HomePage extends ConsumerWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 const SizedBox(height: 12),
-                const _SectionHeader(title: 'Detection')
+                const _SectionHeader(title: 'Quick Scan')
                     .animate()
                     .fade(duration: 400.ms),
                 const SizedBox(height: 16),
-                RealtimeDetectionCard(modelReady: modelReady),
-                const SizedBox(height: 16),
-                StaticScanCard(modelReady: modelReady),
+                StaticScanCard(modelReady: staticModelReady),
                 const SizedBox(height: 16),
                 DiseaseHeroCard(modelReady: diseaseModelReady),
+                const SizedBox(height: 16),
+                const OnboardingTipsCard(),
                 const SizedBox(height: 32),
                 const _SectionHeader(title: 'Knowledge Base')
                     .animate()
@@ -83,21 +84,27 @@ class HomePage extends ConsumerWidget {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'PomeScan',
-              style: TextStyle(
-                color: AppColors.textPrimary,
-                fontSize: 28,
-                fontWeight: FontWeight.w800,
-                letterSpacing: -0.5,
-              ),
+            Row(
+              children: const [
+                _HomeLogoMark(),
+                SizedBox(width: 10),
+                Text(
+                  'PomeScan',
+                  style: TextStyle(
+                    color: AppColors.textPrimary,
+                    fontSize: 28,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+              ],
             )
                 .animate()
                 .fade(duration: 500.ms)
                 .slideY(begin: 0.1, end: 0, curve: Curves.easeOutBack),
             const SizedBox(height: 2),
             Text(
-              'Pomegranate Quality AI',
+              'Simple farming assistant',
               style: TextStyle(
                 color: AppColors.textPrimary.withValues(alpha: 0.6),
                 fontSize: 13,
@@ -106,6 +113,32 @@ class HomePage extends ConsumerWidget {
             ).animate().fade(duration: 500.ms, delay: 100.ms),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _HomeLogoMark extends StatelessWidget {
+  const _HomeLogoMark();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.primaryDark, AppColors.primary],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(9),
+        border: Border.all(color: Colors.white24),
+      ),
+      child: const Icon(
+        Icons.spa_rounded,
+        size: 16,
+        color: Colors.white,
       ),
     );
   }
