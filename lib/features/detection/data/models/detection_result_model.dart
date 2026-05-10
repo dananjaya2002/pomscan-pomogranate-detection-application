@@ -28,29 +28,29 @@ final class DetectionModel {
 
   /// Converts this model to the domain [Detection] entity.
   Detection toEntity() => Detection(
-    box: BoundingBox(x1: x1, y1: y1, x2: x2, y2: y2),
-    label: label,
-    confidence: confidence,
-    cls: DetectionClass.values[classIndex],
-  );
+        box: BoundingBox(x1: x1, y1: y1, x2: x2, y2: y2),
+        label: label,
+        confidence: confidence,
+        cls: DetectionClass.values[classIndex],
+      );
 
   factory DetectionModel.fromMap(Map<String, dynamic> map) => DetectionModel(
-    x1: (map['x1'] as num).toDouble(),
-    y1: (map['y1'] as num).toDouble(),
-    x2: (map['x2'] as num).toDouble(),
-    y2: (map['y2'] as num).toDouble(),
-    label: map['label'] as String,
-    confidence: (map['confidence'] as num).toDouble(),
-    classIndex: map['classIndex'] as int,
-  );
+        x1: (map['x1'] as num).toDouble(),
+        y1: (map['y1'] as num).toDouble(),
+        x2: (map['x2'] as num).toDouble(),
+        y2: (map['y2'] as num).toDouble(),
+        label: map['label'] as String,
+        confidence: (map['confidence'] as num).toDouble(),
+        classIndex: map['classIndex'] as int,
+      );
 
   Map<String, dynamic> toMap() => {
-    'x1': x1,
-    'y1': y1,
-    'x2': x2,
-    'y2': y2,
-    'label': label,
-    'confidence': confidence,
-    'classIndex': classIndex,
-  };
+        'x1': x1,
+        'y1': y1,
+        'x2': x2,
+        'y2': y2,
+        'label': label,
+        'confidence': confidence,
+        'classIndex': classIndex,
+      };
 }

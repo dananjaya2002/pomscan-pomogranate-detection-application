@@ -5,8 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/theme/app_theme.dart';
+import '../../../info/domain/entities/info_item.dart';
+import '../../../info/presentation/pages/info_list_page.dart';
 import '../../domain/entities/detection.dart';
-import '../providers/detection_provider.dart';
+import '../providers/static_detection_provider.dart';
 
 class StaticDetectionPage extends ConsumerStatefulWidget {
   const StaticDetectionPage({super.key});
@@ -23,6 +26,14 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
   bool _isLoadingModel = false;
   Size? _imageNaturalSize;
   String? _resultMessage;
+
+  int get _ripeCount =>
+      _detections?.where((d) => d.label == 'ripe').length ?? 0;
+  int get _semiRipeCount =>
+      _detections?.where((d) => d.label == 'semi_ripe').length ?? 0;
+  int get _unripeCount =>
+      _detections?.where((d) => d.label == 'unripe').length ?? 0;
+  bool get _hasRipeDetections => _ripeCount > 0;
 
   Future<void> _pickImage(ImageSource source) async {
     final picker = ImagePicker();
@@ -111,88 +122,235 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
     }
   }
 
+  void _openHarvestingGuide() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => const InfoListPage(type: InfoType.harvesting),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Static Image Detection (Float32)'),
+        title: const Text('Ripeness Detection'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: Center(
-              child: _image == null
-                  ? const Text('No image selected.')
-                  : Stack(
-                      fit: StackFit.loose,
-                      children: [
-                        Image.file(_image!),
-                        if (_detections != null && _imageNaturalSize != null)
-                          Positioned.fill(
-                            child: CustomPaint(
-                              painter: _StaticBBoxPainter(
-                                _detections!,
-                                _imageNaturalSize!,
-                              ),
-                            ),
-                          ),
-                        if (_isProcessing)
-                          const Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        if (_isLoadingModel)
-                          const Center(
-                            child: Card(
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 8,
-                                ),
-                                child: Text('Loading Float32 model...'),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-            ),
-          ),
-          if (_resultMessage != null)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  _resultMessage!,
-                  style: const TextStyle(
-                    color: Colors.white70,
-                    fontWeight: FontWeight.w600,
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: AppColors.surface,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: AppColors.cardBorder),
+                ),
+                child: const Text(
+                  'This scan identifies fruits as ripe, semi-ripe, or unripe from a selected image.',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 13,
+                    height: 1.4,
                   ),
                 ),
               ),
-            ),
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton.icon(
-                  onPressed: _isProcessing
-                      ? null
-                      : () => _pickImage(ImageSource.camera),
-                  icon: const Icon(Icons.camera_alt),
-                  label: const Text('Camera'),
+              const SizedBox(height: 12),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(18),
+                child: Container(
+                  color: AppColors.surfaceVariant,
+                  constraints: const BoxConstraints(minHeight: 260),
+                  child: Center(
+                    child: _image == null
+                        ? const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 50),
+                            child: Text(
+                              'No image selected yet.',
+                              style: TextStyle(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          )
+                        : Stack(
+                            fit: StackFit.loose,
+                            children: [
+                              Image.file(_image!),
+                              if (_detections != null &&
+                                  _imageNaturalSize != null)
+                                Positioned.fill(
+                                  child: CustomPaint(
+                                    painter: _StaticBBoxPainter(
+                                      _detections!,
+                                      _imageNaturalSize!,
+                                    ),
+                                  ),
+                                ),
+                              if (_isProcessing)
+                                const Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              if (_isLoadingModel)
+                                const Center(
+                                  child: Card(
+                                    child: Padding(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 8,
+                                      ),
+                                      child: Text('Loading detection model...'),
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                  ),
                 ),
-                ElevatedButton.icon(
-                  onPressed: _isProcessing
-                      ? null
-                      : () => _pickImage(ImageSource.gallery),
-                  icon: const Icon(Icons.photo_library),
-                  label: const Text('Gallery'),
+              ),
+              const SizedBox(height: 14),
+              if (_detections != null && _detections!.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColors.cardBorder),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Detected Fruit Status',
+                        style: TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          _StatusChip(
+                            label: 'Ripe',
+                            count: _ripeCount,
+                            color: AppColors.ripe,
+                          ),
+                          _StatusChip(
+                            label: 'Semi-ripe',
+                            count: _semiRipeCount,
+                            color: AppColors.semiRipe,
+                          ),
+                          _StatusChip(
+                            label: 'Unripe',
+                            count: _unripeCount,
+                            color: AppColors.unripe,
+                          ),
+                        ],
+                      ),
+                      if (_hasRipeDetections) ...[
+                        const SizedBox(height: 12),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: _openHarvestingGuide,
+                            icon: const Icon(Icons.menu_book_rounded),
+                            label: const Text('Open Harvesting Guide'),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.harvestingAccent,
+                              side: const BorderSide(
+                                color: AppColors.harvestingAccent,
+                              ),
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-              ],
-            ),
+              if (_resultMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 10),
+                  child: Text(
+                    _resultMessage!,
+                    style: const TextStyle(
+                      color: AppColors.textSecondary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              const SizedBox(height: 14),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _isProcessing
+                          ? null
+                          : () => _pickImage(ImageSource.camera),
+                      icon: const Icon(Icons.camera_alt),
+                      label: const Text('Take Photo'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: ElevatedButton.icon(
+                      onPressed: _isProcessing
+                          ? null
+                          : () => _pickImage(ImageSource.gallery),
+                      icon: const Icon(Icons.photo_library),
+                      label: const Text('Gallery'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-        ],
+        ),
+      ),
+    );
+  }
+}
+
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({
+    required this.label,
+    required this.count,
+    required this.color,
+  });
+
+  final String label;
+  final int count;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: color.withAlpha(30),
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: color.withAlpha(130)),
+      ),
+      child: Text(
+        '$label: $count',
+        style: TextStyle(
+          color: color,
+          fontSize: 13,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }
@@ -207,7 +365,7 @@ class _StaticBBoxPainter extends CustomPainter {
   /// letterboxed/pillarboxed image rect rendered inside the canvas.
   final Size naturalImageSize;
 
-  static const double _strokeWidth = 2.5;
+  static const double _strokeWidth = 3.6;
   static const double _cornerLen = 22.0;
 
   @override
@@ -260,13 +418,22 @@ class _StaticBBoxPainter extends CustomPainter {
         rect.right >= canvasSize.width - edgeEpsilon &&
         rect.bottom >= canvasSize.height - edgeEpsilon;
 
-    final borderStroke = isNearFullImage ? 2.6 : 1.5;
-    final borderAlpha = isNearFullImage ? 245 : 180;
+    final borderStroke = isNearFullImage ? 3.8 : 2.6;
+    final borderAlpha = isNearFullImage ? 255 : 240;
 
-    // ── Subtle semi-transparent fill ────────────────────────────────────
+    // ── Stronger semi-transparent fill for visibility ───────────────────
     canvas.drawRRect(
       RRect.fromRectAndRadius(rect, const Radius.circular(6)),
-      Paint()..color = color.withAlpha(22),
+      Paint()..color = color.withAlpha(36),
+    );
+
+    // ── Dark outline below color stroke for better contrast on bright images
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(rect, const Radius.circular(6)),
+      Paint()
+        ..color = Colors.black.withAlpha(180)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = borderStroke + 1.6,
     );
 
     // ── Full rounded-rect border ────────────────────────────────────────
@@ -295,12 +462,37 @@ class _StaticBBoxPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = _strokeWidth
       ..strokeCap = StrokeCap.square;
+    final Paint bracketShadowPaint = Paint()
+      ..color = Colors.black.withAlpha(180)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = _strokeWidth + 1.2
+      ..strokeCap = StrokeCap.square;
 
     final double cl =
         _cornerLen.clamp(12.0, 30.0).clamp(0.0, rect.width * 0.35);
     final double cs = cl.clamp(0.0, rect.height * 0.35);
 
     canvas
+      // Top-left shadow
+      ..drawLine(
+          rect.topLeft, rect.topLeft.translate(cl, 0), bracketShadowPaint)
+      ..drawLine(
+          rect.topLeft, rect.topLeft.translate(0, cs), bracketShadowPaint)
+      // Top-right shadow
+      ..drawLine(
+          rect.topRight, rect.topRight.translate(-cl, 0), bracketShadowPaint)
+      ..drawLine(
+          rect.topRight, rect.topRight.translate(0, cs), bracketShadowPaint)
+      // Bottom-left shadow
+      ..drawLine(
+          rect.bottomLeft, rect.bottomLeft.translate(cl, 0), bracketShadowPaint)
+      ..drawLine(rect.bottomLeft, rect.bottomLeft.translate(0, -cs),
+          bracketShadowPaint)
+      // Bottom-right shadow
+      ..drawLine(rect.bottomRight, rect.bottomRight.translate(-cl, 0),
+          bracketShadowPaint)
+      ..drawLine(rect.bottomRight, rect.bottomRight.translate(0, -cs),
+          bracketShadowPaint)
       // Top-left
       ..drawLine(rect.topLeft, rect.topLeft.translate(cl, 0), bracketPaint)
       ..drawLine(rect.topLeft, rect.topLeft.translate(0, cs), bracketPaint)
@@ -334,9 +526,9 @@ class _StaticBBoxPainter extends CustomPainter {
         rawLabel[0].toUpperCase() + rawLabel.substring(1);
     final String text = '$displayLabel  ${detection.confidencePercent}';
 
-    const double padding = 5.0;
+    const double padding = 6.0;
     const double radius = 5.0;
-    const double fontSize = 11.5;
+    const double fontSize = 12.2;
 
     final TextPainter tp = TextPainter(
       text: TextSpan(
@@ -363,6 +555,14 @@ class _StaticBBoxPainter extends CustomPainter {
     canvas.drawRRect(
       RRect.fromRectAndRadius(
         Rect.fromLTWH(pillX, pillTop, pillW, pillH),
+        const Radius.circular(radius),
+      ),
+      Paint()..color = Colors.black.withAlpha(190),
+    );
+
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(pillX + 1, pillTop + 1, pillW - 2, pillH - 2),
         const Radius.circular(radius),
       ),
       Paint()..color = color.withAlpha(220),

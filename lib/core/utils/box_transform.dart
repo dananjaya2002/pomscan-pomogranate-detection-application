@@ -73,8 +73,9 @@ abstract final class BoxTransformer {
   ) {
     // Ensure we treat the camera as portrait (ar ≤ 1). If the platform
     // accidentally reports a landscape ratio, invert it.
-    final double ar =
-        previewAspectRatio > 1.0 ? 1.0 / previewAspectRatio : previewAspectRatio;
+    final double ar = previewAspectRatio > 1.0
+        ? 1.0 / previewAspectRatio
+        : previewAspectRatio;
 
     final double W = overlaySize.width;
     final double H = overlaySize.height;

@@ -115,8 +115,7 @@ Float32List preprocessCameraFrame(FramePreprocessInput input) {
 img.Image _convertYUV420(FramePreprocessInput input) {
   // Determine sampling step so the output image is approximately
   // preprocessSize × (preprocessSize * height/width) pixels.
-  final int step =
-      (input.width / input.preprocessSize).ceil().clamp(1, 4);
+  final int step = (input.width / input.preprocessSize).ceil().clamp(1, 4);
 
   final int outW = (input.width / step).ceil();
   final int outH = (input.height / step).ceil();
@@ -133,8 +132,7 @@ img.Image _convertYUV420(FramePreprocessInput input) {
   for (int sy = 0, dy = 0; sy < input.height; sy += step, dy++) {
     for (int sx = 0, dx = 0; sx < input.width; sx += step, dx++) {
       final int yIndex = sy * yRowStride + sx;
-      final int uvIndex =
-          (sy ~/ 2) * uvRowStride + (sx ~/ 2) * uvPixelStride;
+      final int uvIndex = (sy ~/ 2) * uvRowStride + (sx ~/ 2) * uvPixelStride;
 
       final int yVal = yBytes[yIndex] & 0xFF;
       final int uVal = (uBytes[uvIndex] & 0xFF) - 128;

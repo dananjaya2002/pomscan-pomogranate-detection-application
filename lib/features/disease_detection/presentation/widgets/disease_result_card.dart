@@ -171,7 +171,8 @@ class _DiseaseCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                _ConfidenceBadge(confidence: result.confidence, color: _accentColor),
+                _ConfidenceBadge(
+                    confidence: result.confidence, color: _accentColor),
               ],
             ),
           ),
@@ -185,7 +186,8 @@ class _DiseaseCard extends StatelessWidget {
           // Action
           Padding(
             padding: const EdgeInsets.all(14),
-            child: _ViewDetailsButton(result: result, accentColor: _accentColor),
+            child:
+                _ViewDetailsButton(result: result, accentColor: _accentColor),
           ),
         ],
       ),

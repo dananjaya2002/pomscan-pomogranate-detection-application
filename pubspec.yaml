@@ -1,5 +1,5 @@
-name: flutter_application_1
-description: "A new Flutter project."
+name: Pomescan
+description: "AI-powered plant disease detection app using Flutter and TensorFlow Lite."
 publish_to: "none"
 version: 0.1.0+1
 
@@ -28,6 +28,8 @@ dependencies:
   logger: ^2.4.0
   shared_preferences: ^2.3.2
   image_picker: ^1.1.2
+  google_fonts: ^8.1.0
+  flutter_animate: ^4.5.2
 
 dev_dependencies:
   flutter_test:
@@ -40,3 +42,4 @@ flutter:
   assets:
     - assets/models/
     - assets/content/
+
