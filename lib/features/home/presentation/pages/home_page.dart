@@ -23,7 +23,7 @@ class HomePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final staticModelState = ref.watch(staticModelInitProvider);
     final staticModelReady =
-      staticModelState.hasValue && !staticModelState.hasError;
+        staticModelState.hasValue && !staticModelState.hasError;
 
     final diseaseModelState = ref.watch(diseaseModelInitProvider);
     final diseaseModelReady =
