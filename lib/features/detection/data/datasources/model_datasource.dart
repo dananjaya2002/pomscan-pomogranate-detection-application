@@ -1,11 +1,8 @@
-/// TFLite model data source — loads the interpreter and runs inference.
+/// TFLite detection model data source.
 ///
-/// Handles:
-///  - Async interpreter loading from the Flutter asset bundle.
-///  - Android: 3-tier delegate cascade: GPU → NNAPI → XNNPack → CPU baseline.
-///  - iOS: Core ML delegate with CPU fallback.
-///  - Dynamic thread count based on device processor count.
-///  - Single forward pass with pre-allocated output buffers.
+/// Follows the same basic pattern as the disease model datasource:
+/// lazy initialise, read tensor size from the model, run inference on a flat
+/// Float32 buffer, and dispose the interpreter when done.
 library;
 
 import 'dart:io';
@@ -19,70 +16,50 @@ import '../../../../core/errors/failures.dart';
 
 final _log = Logger(printer: PrettyPrinter(methodCount: 0));
 
-/// Wraps the TFLite interpreter lifecycle and raw inference call.
-///
-/// Call [initialise] once before any [runInference] calls.
-/// Call [dispose] when the detection pipeline is torn down.
 final class ModelDataSource {
-  ModelDataSource();
+  ModelDataSource({required this.modelAssetPath});
+
+  final String modelAssetPath;
 
   Interpreter? _interpreter;
   bool _isInitialised = false;
-
-  /// Human-readable name of the delegate that was successfully applied.
   String _activeDelegate = 'CPU';
 
+  int _inputSize = AppConstants.inputSize;
+  int _outputRows = AppConstants.numClasses + 4;
+  int _outputCols = 8400;
+  double _lastInferenceLatencyMs = 0.0;
+
   bool get isInitialised => _isInitialised;
-
-  /// Which acceleration backend is in use (e.g. "GPU", "NNAPI", "XNNPack", "CPU").
   String get activeDelegate => _activeDelegate;
+  int get inputSize => _inputSize;
+  int get outputRows => _outputRows;
+  int get outputCols => _outputCols;
+  double get lastInferenceLatencyMs => _lastInferenceLatencyMs;
 
-  // ── Initialisation ────────────────────────────────────────────────────────
-
-  /// Loads the `.tflite` asset, registers the best available delegate, and
-  /// allocates tensors.
-  ///
-  /// Idempotent — safe to call multiple times.
-  /// Throws [ModelFailure] if the asset cannot be loaded.
   Future<void> initialise() async {
     if (_isInitialised) return;
 
-    // Determine optimal thread count: leave one core free for the UI thread.
     final threads = (Platform.numberOfProcessors - 1).clamp(2, 4);
 
-    // Delegate strategy:
-    // - Android: No hardware delegates. GpuDelegateV2 causes silent hangs on
-    //   Mali/Adreno; XNNPackDelegate causes an uncatchable SIGSEGV on Exynos
-    //   9xxx devices (Samsung Galaxy M21). Falls through to CPU baseline.
-    // - iOS: CoreML delegate with CPU fallback.
     final delegatesToTry = <_DelegateTier>[
       if (Platform.isIOS)
-        _DelegateTier(
-          name: 'CoreML',
-          build: () => CoreMlDelegate(),
-        ),
+        _DelegateTier(name: 'CoreML', build: () => CoreMlDelegate()),
     ];
 
     for (final tier in delegatesToTry) {
       try {
         final options = InterpreterOptions()..threads = threads;
         options.addDelegate(tier.build());
-
         _interpreter = await Interpreter.fromAsset(
-          AppConstants.modelAssetPath,
+          modelAssetPath,
           options: options,
         );
         _interpreter!.allocateTensors();
         _isInitialised = true;
         _activeDelegate = tier.name;
-
-        final inputShape = _interpreter!.getInputTensor(0).shape;
-        final outputShape = _interpreter!.getOutputTensor(0).shape;
-        _log.i(
-          'Model ready [$_activeDelegate] — '
-          'input: $inputShape  output: $outputShape  threads: $threads',
-        );
-        return; // success — exit early
+        _logReady(threads);
+        return;
       } catch (e) {
         _log.w('${tier.name} delegate failed, trying next: $e');
         _interpreter?.close();
@@ -90,41 +67,40 @@ final class ModelDataSource {
       }
     }
 
-    // Baseline: plain multithreaded CPU — always supported.
     try {
       final options = InterpreterOptions()..threads = threads;
       _interpreter = await Interpreter.fromAsset(
-        AppConstants.modelAssetPath,
+        modelAssetPath,
         options: options,
       );
       _interpreter!.allocateTensors();
       _isInitialised = true;
       _activeDelegate = 'CPU';
-
-      final inputShape = _interpreter!.getInputTensor(0).shape;
-      final outputShape = _interpreter!.getOutputTensor(0).shape;
-      _log.i(
-        'Model ready [CPU] — '
-        'input: $inputShape  output: $outputShape  threads: $threads',
-      );
+      _logReady(threads);
     } catch (e, st) {
-      _log.e('Model load failed (CPU fallback)', error: e, stackTrace: st);
-      throw ModelFailure('Failed to load TFLite model: $e');
+      _log.e(
+        'Detection model load failed (CPU fallback)',
+        error: e,
+        stackTrace: st,
+      );
+      throw ModelFailure('Failed to load detection TFLite model: $e');
     }
   }
 
-  // ── Inference ─────────────────────────────────────────────────────────────
+  void _logReady(int threads) {
+    final inputShape = _interpreter!.getInputTensor(0).shape;
+    final outputShape = _interpreter!.getOutputTensor(0).shape;
+    _inputSize = inputShape[1];
+    if (outputShape.length >= 3) {
+      _outputRows = outputShape[1];
+      _outputCols = outputShape[2];
+    }
+    _log.i(
+      'Detection model ready [$_activeDelegate] — '
+      'input: $inputShape  output: $outputShape  threads: $threads',
+    );
+  }
 
-  /// Runs a single YOLO11 forward pass.
-  ///
-  /// [inputBuffer] — flat [Float32List] of shape
-  ///   `[1 × inputSize × inputSize × 3]` normalised to [0, 1].
-  ///
-  /// Returns the raw output tensor as `List<List<double>>` of shape
-  ///   `[7, 8400]` where rows are features (cx, cy, w, h, c0, c1, c2) and
-  ///   columns are anchor candidates.
-  ///
-  /// Throws [StateError] if called before [initialise].
   Future<List<List<double>>> runInference(Float32List inputBuffer) async {
     if (!_isInitialised || _interpreter == null) {
       throw StateError(
@@ -132,46 +108,50 @@ final class ModelDataSource {
       );
     }
 
-    // Reshape flat buffer to NHWC [1, 640, 640, 3] for the interpreter.
+    final expectedInputLength = _inputSize * _inputSize * 3;
+    if (inputBuffer.length != expectedInputLength) {
+      throw ArgumentError(
+        'Input tensor shape mismatch: expected flat length '
+        '$expectedInputLength (1x$_inputSize'
+        'x$_inputSize'
+        'x3), got ${inputBuffer.length}.',
+      );
+    }
+
     final input = inputBuffer.reshape([
       1,
-      AppConstants.inputSize,
-      AppConstants.inputSize,
+      _inputSize,
+      _inputSize,
       3,
     ]);
 
-    // Pre-allocate output buffer matching the model's output tensor [1, 7, 8400].
     final output = List.generate(
       1,
       (_) => List.generate(
-        AppConstants.numClasses + 4, // 4 box coords + numClasses scores
-        (_) => List<double>.filled(8400, 0.0),
+        _outputRows,
+        (_) => List<double>.filled(_outputCols, 0.0),
       ),
     );
 
-    _interpreter!.run(input, output);
+    try {
+      final stopwatch = Stopwatch()..start();
+      _interpreter!.run(input, output);
+      stopwatch.stop();
+      _lastInferenceLatencyMs = stopwatch.elapsedMicroseconds / 1000.0;
+    } on ArgumentError catch (e) {
+      throw StateError('Model inference failed due to shape mismatch: $e');
+    }
 
-    // Slice off the batch dimension — callers expect [7][8400].
     return output[0];
   }
 
-  // ── Disposal ──────────────────────────────────────────────────────────────
-
-  /// Closes the interpreter and releases native resources.
   Future<void> dispose() async {
     _interpreter?.close();
     _interpreter = null;
     _isInitialised = false;
-    _log.d('ModelDataSource disposed');
   }
 }
 
-// ── Private helper ─────────────────────────────────────────────────────────
-
-/// Pairs a human-readable delegate name with a factory function.
-///
-/// Used by [ModelDataSource.initialise] to try each accelerator in order
-/// without duplicating the interpreter-creation boilerplate.
 final class _DelegateTier {
   const _DelegateTier({required this.name, required this.build});
   final String name;

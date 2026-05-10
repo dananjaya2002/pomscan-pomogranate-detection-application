@@ -27,34 +27,18 @@ class SettingsPage extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
         children: [
-          // ── Quality / Performance ─────────────────────────────────────────
-          _SectionHeader(title: 'Performance & Quality'),
+          // ── Simple mode notice ───────────────────────────────────────────
+          _SectionHeader(title: 'Scan Mode'),
           _SettingsCard(
             children: [
-              _SegmentedRow<CameraQuality>(
-                label: 'Camera Resolution',
-                description: 'Higher = sharper feed but slower inference',
-                values: CameraQuality.values,
-                selected: settings.cameraQuality,
-                labelOf: (v) => v.label,
-                hintOf: (v) => v.hint,
-                onChanged:
-                    (v) => ref
-                        .read(settingsProvider.notifier)
-                        .updateCameraQuality(v),
-              ),
-              _Divider(),
-              _SegmentedRow<PerformanceMode>(
-                label: 'Processing Speed',
-                description: 'Controls how many camera frames are analysed',
-                values: PerformanceMode.values,
-                selected: settings.performanceMode,
-                labelOf: (v) => v.label,
-                hintOf: (v) => v.hint,
-                onChanged:
-                    (v) => ref
-                        .read(settingsProvider.notifier)
-                        .updatePerformanceMode(v),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  'This app now uses a simple photo-based workflow: '
+                  'Ripeness Scan and Disease Detection. Real-time camera '
+                  'stream detection has been removed for easier field use.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ),
             ],
           ),
@@ -73,10 +57,9 @@ class SettingsPage extends ConsumerWidget {
                 divisions: 12,
                 displayValue:
                     '${(settings.confidenceThreshold * 100).round()}%',
-                onChanged:
-                    (v) => ref
-                        .read(settingsProvider.notifier)
-                        .updateConfidenceThreshold(v),
+                onChanged: (v) => ref
+                    .read(settingsProvider.notifier)
+                    .updateConfidenceThreshold(v),
               ),
               _Divider(),
               _SliderRow(
@@ -87,10 +70,9 @@ class SettingsPage extends ConsumerWidget {
                 max: 10,
                 divisions: 9,
                 displayValue: '${settings.maxDetections}',
-                onChanged:
-                    (v) => ref
-                        .read(settingsProvider.notifier)
-                        .updateMaxDetections(v.round()),
+                onChanged: (v) => ref
+                    .read(settingsProvider.notifier)
+                    .updateMaxDetections(v.round()),
               ),
             ],
           ),
@@ -101,7 +83,11 @@ class SettingsPage extends ConsumerWidget {
             children: [
               _InfoRow(label: 'Model', value: 'YOLO11 (3-class)'),
               _Divider(),
-              _InfoRow(label: 'Input Size', value: '640 × 640 px'),
+              _InfoRow(
+                label: 'Input Size',
+                value:
+                    '${settings.modelInputSize.pixels} × 640 px (model 640×640)',
+              ),
               _Divider(),
               _InfoRow(label: 'Framework', value: 'TFLite 0.12'),
               _Divider(),
@@ -166,109 +152,6 @@ class _Divider extends StatelessWidget {
   @override
   Widget build(BuildContext context) =>
       const Divider(height: 1, thickness: 1, color: AppColors.divider);
-}
-
-class _SegmentedRow<T> extends StatelessWidget {
-  const _SegmentedRow({
-    required this.label,
-    required this.description,
-    required this.values,
-    required this.selected,
-    required this.labelOf,
-    required this.hintOf,
-    required this.onChanged,
-  });
-
-  final String label;
-  final String description;
-  final List<T> values;
-  final T selected;
-  final String Function(T) labelOf;
-  final String Function(T) hintOf;
-  final void Function(T) onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 3),
-          Text(description, style: Theme.of(context).textTheme.bodySmall),
-          const SizedBox(height: 12),
-          Row(
-            children:
-                values.map((v) {
-                  final isSelected = v == selected;
-                  return Expanded(
-                    child: Padding(
-                      padding: EdgeInsets.only(right: v == values.last ? 0 : 6),
-                      child: InkWell(
-                        borderRadius: BorderRadius.circular(8),
-                        onTap: () => onChanged(v),
-                        child: AnimatedContainer(
-                          duration: const Duration(milliseconds: 180),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 10,
-                          ),
-                          decoration: BoxDecoration(
-                            color:
-                                isSelected
-                                    ? AppColors.primaryDark
-                                    : AppColors.surfaceVariant,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color:
-                                  isSelected
-                                      ? AppColors.primaryLight
-                                      : Colors.transparent,
-                              width: 1.5,
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              Text(
-                                labelOf(v),
-                                style: TextStyle(
-                                  color:
-                                      isSelected
-                                          ? AppColors.primaryLight
-                                          : AppColors.textSecondary,
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                hintOf(v),
-                                style: TextStyle(
-                                  color:
-                                      isSelected
-                                          ? AppColors.primaryLight.withAlpha(
-                                            153,
-                                          )
-                                          : AppColors.textMuted,
-                                  fontSize: 9,
-                                ),
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                }).toList(),
-          ),
-        ],
-      ),
-    );
-  }
 }
 
 class _SliderRow extends StatelessWidget {

@@ -138,8 +138,7 @@ class AboutPage extends StatelessWidget {
           // ── Project context ───────────────────────────────────────────────
           _InfoCard(
             title: 'Academic Context',
-            content:
-                'Department of Computer Engineering\n'
+            content: 'Department of Computer Engineering\n'
                 'Faculty of Engineering\n'
                 'Final Year Research Project — Year 3, Semester 2\n\n'
                 'This project explores the feasibility of deploying large '
@@ -161,9 +160,9 @@ class AboutPage extends StatelessWidget {
               'purposes. Detection results are AI-generated estimates and '
               'should not replace expert agronomic assessment.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textMuted,
-                height: 1.6,
-              ),
+                    color: AppColors.textMuted,
+                    height: 1.6,
+                  ),
             ),
           ),
         ],
@@ -199,9 +198,9 @@ class _InfoCard extends StatelessWidget {
           Text(
             content,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-              height: 1.65,
-            ),
+                  color: AppColors.textSecondary,
+                  height: 1.65,
+                ),
           ),
         ],
       ),

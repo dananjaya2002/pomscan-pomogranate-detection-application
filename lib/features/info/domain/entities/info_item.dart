@@ -74,8 +74,7 @@ final class InfoItem {
       // 'description' key is optional — fall back to 'symptoms', 'cause', or
       // empty string so disease/plantation/harvesting JSON missing the field
       // does not throw a type-cast error at runtime.
-      description:
-          json['description'] as String? ??
+      description: json['description'] as String? ??
           json['symptoms'] as String? ??
           json['cause'] as String? ??
           '',

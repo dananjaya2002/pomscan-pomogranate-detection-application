@@ -29,11 +29,19 @@ final class SettingsNotifier extends AsyncNotifier<AppSettings> {
   Future<void> updatePerformanceMode(PerformanceMode mode) =>
       _update((s) => s.copyWith(performanceMode: mode));
 
+  Future<void> updateRealtimeFrameInterval(RealtimeFrameInterval interval) =>
+      _update((s) => s.copyWith(realtimeFrameInterval: interval));
+  Future<void> updateAdaptiveFrameSkipping(bool enabled) =>
+      _update((s) => s.copyWith(adaptiveFrameSkipping: enabled));
+
   Future<void> updateConfidenceThreshold(double value) =>
       _update((s) => s.copyWith(confidenceThreshold: value));
 
   Future<void> updateMaxDetections(int value) =>
       _update((s) => s.copyWith(maxDetections: value));
+
+  Future<void> updateModelInputSize(ModelInputSize size) =>
+      _update((s) => s.copyWith(modelInputSize: size));
 
   Future<void> _update(AppSettings Function(AppSettings) updater) async {
     final current = state.valueOrNull ?? const AppSettings();

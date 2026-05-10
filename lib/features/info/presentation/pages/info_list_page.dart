@@ -39,25 +39,21 @@ class InfoListPage extends ConsumerWidget {
         ),
       ),
       body: asyncItems.when(
-        loading:
-            () => const Center(
-              child: CircularProgressIndicator(color: AppColors.primaryLight),
-            ),
-        error:
-            (e, _) => Center(
-              child: Text(
-                'Failed to load content: $e',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-            ),
-        data:
-            (items) => ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
-              itemCount: items.length,
-              itemBuilder:
-                  (context, index) =>
-                      _ItemCard(item: items[index], accent: accent),
-            ),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: AppColors.primaryLight),
+        ),
+        error: (e, _) => Center(
+          child: Text(
+            'Failed to load content: $e',
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+        data: (items) => ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+          itemCount: items.length,
+          itemBuilder: (context, index) =>
+              _ItemCard(item: items[index], accent: accent),
+        ),
       ),
     );
   }
@@ -75,13 +71,12 @@ class _ItemCard extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: InkWell(
         borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
-        onTap:
-            () => Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => InfoDetailPage(item: item, accent: accent),
-              ),
-            ),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => InfoDetailPage(item: item, accent: accent),
+          ),
+        ),
         child: Container(
           decoration: AppTheme.cardDecoration(
             borderColor: accent.withAlpha(60),

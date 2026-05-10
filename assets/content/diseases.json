@@ -20,6 +20,16 @@
     "icon": "🍎"
   },
   {
+    "id": "anthracnose",
+    "name": "Anthracnose",
+    "severity": "High",
+    "cause": "Fungal pathogen Colletotrichum gloeosporioides",
+    "symptoms": "Dark, sunken lesions on fruit surface with orange-pink spore masses in humid conditions. Water-soaked spots that enlarge and turn brown-black. Premature fruit drop and post-harvest fruit rot.",
+    "treatment": "Apply Carbendazim 0.1% or Mancozeb 0.25% at 10–15 day intervals. Remove and destroy infected fruits and plant debris. Copper-based fungicides (Copper Oxychloride 0.3%) provide effective control. Post-harvest hot water treatment at 52°C for 2 minutes.",
+    "prevention": "Avoid overhead irrigation and water stagnation. Maintain canopy aeration by regular pruning. Harvest fruits before full ripeness if disease pressure is high. Use disease-free planting material.",
+    "icon": "🔴"
+  },
+  {
     "id": "bacterial_blight",
     "name": "Bacterial Blight",
     "severity": "High",

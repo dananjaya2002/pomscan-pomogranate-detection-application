@@ -22,6 +22,11 @@ abstract interface class DetectionRepository {
     CameraImage frame, {
     double? confidenceThreshold,
     int? maxDetections,
+
+    /// Intermediate preprocessing resolution (320 / 416 / 640).
+    /// Controls speed vs quality of the YUV→RGB conversion.
+    /// Defaults to [AppConstants.inputSize] (640) when null.
+    int? preprocessSize,
   });
 
   /// Runs inference on a single static image and returns

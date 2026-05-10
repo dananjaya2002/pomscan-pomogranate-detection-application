@@ -24,11 +24,13 @@ final class RunDetectionUseCase {
     CameraImage frame, {
     double? confidenceThreshold,
     int? maxDetections,
+    int? preprocessSize,
   }) =>
       _repository.detect(
         frame,
         confidenceThreshold: confidenceThreshold,
         maxDetections: maxDetections,
+        preprocessSize: preprocessSize,
       );
 
   Future<List<Detection>> callStatic(
