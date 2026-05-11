@@ -4,8 +4,8 @@ library;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../../core/constants/app_constants.dart';
-import '../../../../../core/theme/app_theme.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/theme/app_theme.dart';
 import '../../../info/domain/entities/info_item.dart';
 import '../../../info/presentation/pages/info_detail_page.dart';
 import '../../../info/presentation/providers/info_provider.dart';
