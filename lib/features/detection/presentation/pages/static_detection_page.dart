@@ -7,6 +7,8 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../info/domain/entities/info_item.dart';
+import '../../../../core/constants/farmer_strings.dart';
+import '../../../../core/widgets/visibility_widgets.dart';
 import '../../../info/presentation/pages/info_list_page.dart';
 import '../../domain/entities/detection.dart';
 import '../providers/static_detection_provider.dart';
@@ -111,10 +113,12 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
         final error = '$e'.toLowerCase();
         final message = error.contains('could not decode image') ||
                 error.contains('selected image is empty')
-            ? 'Image could not be processed. Please use a valid JPG or PNG image.'
+            ? FarmerStrings.errorImageInvalid
             : error.contains('shape mismatch') || error.contains('tensor')
-                ? 'Model tensor mismatch. Please verify the selected detection model export.'
-                : 'Detection failed. Please try again.';
+              ? FarmerStrings.errorProcessing
+              : error.contains('out of memory')
+                ? FarmerStrings.errorOutOfMemory
+                : FarmerStrings.errorGeneral;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(message)),
         );
@@ -135,7 +139,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Ripeness Detection'),
+          title: const Text(FarmerStrings.ripeScanTitle),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -151,7 +155,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: const Text(
-                  'This scan identifies fruits as ripe, semi-ripe, or unripe from a selected image.',
+                    FarmerStrings.ripeScanDescription,
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 13,
@@ -170,7 +174,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                         ? const Padding(
                             padding: EdgeInsets.symmetric(vertical: 50),
                             child: Text(
-                              'No image selected yet.',
+                                '📸 Pick a photo to start scanning',
                               style: TextStyle(
                                 color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w600,
@@ -192,21 +196,31 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                                   ),
                                 ),
                               if (_isProcessing)
-                                const Center(
-                                  child: CircularProgressIndicator(),
-                                ),
-                              if (_isLoadingModel)
-                                const Center(
-                                  child: Card(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 8,
+                                  Positioned.fill(
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20),
+                                        child: ProcessingStatusOverlay(
+                                          status: 'processing',
+                                          statusTitle: FarmerStrings.statusAnalyzing,
+                                          description: FarmerStrings.tipAnalysisTime,
+                                        ),
                                       ),
-                                      child: Text('Loading detection model...'),
                                     ),
                                   ),
-                                ),
+                              if (_isLoadingModel)
+                                  Positioned.fill(
+                                    child: Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(20),
+                                        child: ProcessingStatusOverlay(
+                                          status: 'loading',
+                                          statusTitle: FarmerStrings.statusLoading,
+                                          description: FarmerStrings.tipAnalysisTime,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                             ],
                           ),
                   ),
@@ -225,7 +239,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Detected Fruit Status',
+                          FarmerStrings.resultsTitle,
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 16,
@@ -261,7 +275,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                           child: OutlinedButton.icon(
                             onPressed: _openHarvestingGuide,
                             icon: const Icon(Icons.menu_book_rounded),
-                            label: const Text('Open Harvesting Guide'),
+                              label: const Text(FarmerStrings.viewTreatmentGuide),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.harvestingAccent,
                               side: const BorderSide(
@@ -295,7 +309,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                           ? null
                           : () => _pickImage(ImageSource.camera),
                       icon: const Icon(Icons.camera_alt),
-                      label: const Text('Take Photo'),
+                      label: const Text(FarmerStrings.takePhotoButton),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
@@ -308,7 +322,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                           ? null
                           : () => _pickImage(ImageSource.gallery),
                       icon: const Icon(Icons.photo_library),
-                      label: const Text('Gallery'),
+                      label: const Text(FarmerStrings.selectImageButton),
                       style: ElevatedButton.styleFrom(
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/constants/farmer_strings.dart';
 import '../../../disease_detection/presentation/pages/disease_detection_page.dart';
 import 'model_chip.dart';
 
@@ -54,7 +55,7 @@ class DiseaseHeroCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Detect Diseases',
+                        FarmerStrings.diseaseCheckTitle,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 22,
@@ -64,7 +65,7 @@ class DiseaseHeroCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Check disease symptoms from a photo\nand get care guidance',
+                        FarmerStrings.diseaseCheckDescription,
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.85),
                         fontSize: 14,
@@ -93,7 +94,7 @@ class DiseaseHeroCard extends StatelessWidget {
               ),
               icon: const Icon(Icons.biotech_rounded, size: 22),
               label: const Text(
-                'Start Disease Scan',
+                 FarmerStrings.detectButton,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
               onPressed: () {
