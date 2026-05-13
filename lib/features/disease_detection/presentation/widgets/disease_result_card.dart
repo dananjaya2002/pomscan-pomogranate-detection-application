@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_constants.dart';
+import '../../../../core/constants/farmer_strings.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../info/domain/entities/info_item.dart';
 import '../../../info/presentation/pages/info_detail_page.dart';
@@ -56,7 +57,7 @@ class _HealthyCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
                 Text(
-                  'Healthy',
+                  FarmerStrings.diseaseHealthy,
                   style: TextStyle(
                     color: AppColors.ripe,
                     fontSize: 20,
@@ -65,7 +66,7 @@ class _HealthyCard extends StatelessWidget {
                 ),
                 SizedBox(height: 4),
                 Text(
-                  'No disease detected. The plant appears healthy.',
+                  FarmerStrings.diseaseHealthyMessage,
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 13,
@@ -111,8 +112,6 @@ class _DiseaseCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final confidencePct = (result.confidence * 100).toStringAsFixed(1);
-
     return Container(
       decoration: BoxDecoration(
         color: AppColors.surface,
@@ -162,7 +161,7 @@ class _DiseaseCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Confidence: $confidencePct%',
+                        FarmerStrings.confidenceDescription(result.confidence),
                         style: const TextStyle(
                           color: AppColors.textSecondary,
                           fontSize: 13,
@@ -210,7 +209,7 @@ class _ConfidenceBadge extends StatelessWidget {
         border: Border.all(color: color.withAlpha(80)),
       ),
       child: Text(
-        '${(confidence * 100).toStringAsFixed(0)}%',
+        FarmerStrings.confidenceDescription(confidence),
         style: TextStyle(
           color: color,
           fontSize: 13,

@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../detection/presentation/providers/static_detection_provider.dart';
+import '../../../../core/constants/farmer_strings.dart';
 import '../../../disease_detection/presentation/providers/disease_detection_provider.dart';
 
 // Extracted widgets
@@ -40,7 +41,7 @@ class HomePage extends ConsumerWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 const SizedBox(height: 12),
-                const _SectionHeader(title: 'Quick Scan')
+                const _SectionHeader(title: 'Scan')
                     .animate()
                     .fade(duration: 400.ms),
                 const SizedBox(height: 16),
@@ -50,13 +51,13 @@ class HomePage extends ConsumerWidget {
                 const SizedBox(height: 16),
                 const OnboardingTipsCard(),
                 const SizedBox(height: 32),
-                const _SectionHeader(title: 'Knowledge Base')
+                const _SectionHeader(title: 'Learn')
                     .animate()
                     .fade(duration: 400.ms, delay: 200.ms),
                 const SizedBox(height: 16),
                 const InfoCardsRow(),
                 const SizedBox(height: 32),
-                const _SectionHeader(title: 'App')
+                const _SectionHeader(title: 'More')
                     .animate()
                     .fade(duration: 400.ms, delay: 400.ms),
                 const SizedBox(height: 16),
@@ -104,7 +105,7 @@ class HomePage extends ConsumerWidget {
                 .slideY(begin: 0.1, end: 0, curve: Curves.easeOutBack),
             const SizedBox(height: 2),
             Text(
-              'Simple farming assistant',
+              FarmerStrings.appSubtitle,
               style: TextStyle(
                 color: AppColors.textPrimary.withValues(alpha: 0.6),
                 fontSize: 13,

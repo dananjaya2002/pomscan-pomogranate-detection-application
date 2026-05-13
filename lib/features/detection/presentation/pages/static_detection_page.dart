@@ -7,6 +7,9 @@ import 'package:image_picker/image_picker.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../info/domain/entities/info_item.dart';
+import '../../../../core/constants/farmer_strings.dart';
+import '../../../../core/widgets/visibility_widgets.dart';
+import '../../../../core/widgets/error_widgets.dart';
 import '../../../info/presentation/pages/info_list_page.dart';
 import '../../domain/entities/detection.dart';
 import '../providers/static_detection_provider.dart';
@@ -26,6 +29,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
   bool _isLoadingModel = false;
   Size? _imageNaturalSize;
   String? _resultMessage;
+  String? _scanError;
 
   int get _ripeCount =>
       _detections?.where((d) => d.label == 'ripe').length ?? 0;
@@ -40,11 +44,21 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
     final pickedFile = await picker.pickImage(source: source);
 
     if (pickedFile != null) {
+      final selectedFile = File(pickedFile.path);
+      final validationMessage = validateImageFile(await selectedFile.length());
+      if (validationMessage != null) {
+        if (mounted) {
+          showErrorSnackBar(context, message: validationMessage);
+        }
+        return;
+      }
+
       setState(() {
-        _image = File(pickedFile.path);
+        _image = selectedFile;
         _detections = null; // Reset detections on new image
         _imageNaturalSize = null;
         _resultMessage = null;
+        _scanError = null;
       });
       _runDetection();
     }
@@ -56,6 +70,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
     setState(() {
       _isProcessing = true;
       _resultMessage = null;
+      _scanError = null;
     });
 
     try {
@@ -98,8 +113,13 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
           _detections = results;
           _imageNaturalSize = naturalSize;
           _isProcessing = false;
-          _resultMessage =
-              results.isEmpty ? 'No fruit detected in this image.' : null;
+          _resultMessage = results.isEmpty
+              ? FarmerStrings.noFruitDetected
+              : FarmerStrings.resultsSummary(
+                  _ripeCount,
+                  _semiRipeCount,
+                  _unripeCount,
+                );
         });
       }
     } catch (e) {
@@ -107,16 +127,12 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
         setState(() {
           _isProcessing = false;
           _isLoadingModel = false;
+          _scanError = getFriendlyErrorMessage(e);
         });
-        final error = '$e'.toLowerCase();
-        final message = error.contains('could not decode image') ||
-                error.contains('selected image is empty')
-            ? 'Image could not be processed. Please use a valid JPG or PNG image.'
-            : error.contains('shape mismatch') || error.contains('tensor')
-                ? 'Model tensor mismatch. Please verify the selected detection model export.'
-                : 'Detection failed. Please try again.';
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
+        showErrorSnackBar(
+          context,
+          message: _scanError ?? FarmerStrings.errorGeneral,
+          onRetry: () => _pickImage(ImageSource.gallery),
         );
       }
     }
@@ -135,7 +151,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: const Text('Ripeness Detection'),
+        title: const Text(FarmerStrings.ripeScanTitle),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -151,7 +167,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: const Text(
-                  'This scan identifies fruits as ripe, semi-ripe, or unripe from a selected image.',
+                  FarmerStrings.ripeScanDescription,
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 13,
@@ -170,7 +186,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                         ? const Padding(
                             padding: EdgeInsets.symmetric(vertical: 50),
                             child: Text(
-                              'No image selected yet.',
+                              '📸 Pick a photo to start scanning',
                               style: TextStyle(
                                 color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w600,
@@ -192,18 +208,32 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                                   ),
                                 ),
                               if (_isProcessing)
-                                const Center(
-                                  child: CircularProgressIndicator(),
+                                Positioned.fill(
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: ProcessingStatusOverlay(
+                                        status: 'processing',
+                                        statusTitle:
+                                            FarmerStrings.statusAnalyzing,
+                                        description:
+                                            FarmerStrings.tipAnalysisTime,
+                                      ),
+                                    ),
+                                  ),
                                 ),
                               if (_isLoadingModel)
-                                const Center(
-                                  child: Card(
+                                Positioned.fill(
+                                  child: Center(
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 12,
-                                        vertical: 8,
+                                      padding: const EdgeInsets.all(20),
+                                      child: ProcessingStatusOverlay(
+                                        status: 'loading',
+                                        statusTitle:
+                                            FarmerStrings.statusLoading,
+                                        description:
+                                            FarmerStrings.tipAnalysisTime,
                                       ),
-                                      child: Text('Loading detection model...'),
                                     ),
                                   ),
                                 ),
@@ -213,6 +243,19 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                 ),
               ),
               const SizedBox(height: 14),
+              if (_scanError != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: ErrorStateWidget(
+                    errorMessage: _scanError!,
+                    onRetry: () => _pickImage(ImageSource.gallery),
+                    onDismiss: () {
+                      setState(() {
+                        _scanError = null;
+                      });
+                    },
+                  ),
+                ),
               if (_detections != null && _detections!.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.all(14),
@@ -225,7 +268,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Detected Fruit Status',
+                        FarmerStrings.resultsTitle,
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 16,
@@ -238,17 +281,17 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                         runSpacing: 8,
                         children: [
                           _StatusChip(
-                            label: 'Ripe',
+                            label: FarmerStrings.ripeLabel,
                             count: _ripeCount,
                             color: AppColors.ripe,
                           ),
                           _StatusChip(
-                            label: 'Semi-ripe',
+                            label: FarmerStrings.semiRipeLabel,
                             count: _semiRipeCount,
                             color: AppColors.semiRipe,
                           ),
                           _StatusChip(
-                            label: 'Unripe',
+                            label: FarmerStrings.unripeLabel,
                             count: _unripeCount,
                             color: AppColors.unripe,
                           ),
@@ -261,12 +304,13 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                           child: OutlinedButton.icon(
                             onPressed: _openHarvestingGuide,
                             icon: const Icon(Icons.menu_book_rounded),
-                            label: const Text('Open Harvesting Guide'),
+                            label: const Text(FarmerStrings.viewTreatmentGuide),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.harvestingAccent,
                               side: const BorderSide(
                                 color: AppColors.harvestingAccent,
                               ),
+                              minimumSize: const Size.fromHeight(48),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                           ),
@@ -295,8 +339,9 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                           ? null
                           : () => _pickImage(ImageSource.camera),
                       icon: const Icon(Icons.camera_alt),
-                      label: const Text('Take Photo'),
+                      label: const Text(FarmerStrings.takePhotoButton),
                       style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),
@@ -308,8 +353,9 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                           ? null
                           : () => _pickImage(ImageSource.gallery),
                       icon: const Icon(Icons.photo_library),
-                      label: const Text('Gallery'),
+                      label: const Text(FarmerStrings.selectImageButton),
                       style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),

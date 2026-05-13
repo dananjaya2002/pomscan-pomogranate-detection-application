@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/constants/farmer_strings.dart';
+import '../../../../core/widgets/app_action_button.dart';
 import '../../../detection/presentation/pages/static_detection_page.dart';
 import 'model_chip.dart';
 
@@ -56,7 +58,7 @@ class StaticScanCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Ripeness Scan',
+                      FarmerStrings.ripeScanTitle,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 21,
@@ -66,7 +68,7 @@ class StaticScanCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      'Identify ripe, semi-ripe, and unripe fruits\nfrom one photo in seconds.',
+                      FarmerStrings.ripeScanDescription,
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 13,
@@ -92,21 +94,9 @@ class StaticScanCard extends StatelessWidget {
           const SizedBox(height: 16),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white,
-                foregroundColor: AppColors.primaryDark,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(14),
-                ),
-                elevation: 0,
-              ),
-              icon: const Icon(Icons.image_search_rounded, size: 20),
-              label: const Text(
-                'Start Ripeness Scan',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-              ),
+            child: AppActionButton(
+              icon: Icons.image_search_rounded,
+              label: FarmerStrings.detectButton,
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
