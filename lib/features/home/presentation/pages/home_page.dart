@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 
 import '../../../../core/theme/app_theme.dart';
 import '../../../detection/presentation/providers/static_detection_provider.dart';
+import '../../../../core/constants/farmer_strings.dart';
 import '../../../disease_detection/presentation/providers/disease_detection_provider.dart';
 
 // Extracted widgets
@@ -104,7 +105,7 @@ class HomePage extends ConsumerWidget {
                 .slideY(begin: 0.1, end: 0, curve: Curves.easeOutBack),
             const SizedBox(height: 2),
             Text(
-              'Simple farming assistant',
+              FarmerStrings.appSubtitle,
               style: TextStyle(
                 color: AppColors.textPrimary.withValues(alpha: 0.6),
                 fontSize: 13,
