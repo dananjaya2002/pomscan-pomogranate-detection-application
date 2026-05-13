@@ -41,7 +41,7 @@ class HomePage extends ConsumerWidget {
             sliver: SliverList(
               delegate: SliverChildListDelegate([
                 const SizedBox(height: 12),
-                const _SectionHeader(title: 'Quick Scan')
+                const _SectionHeader(title: 'Scan')
                     .animate()
                     .fade(duration: 400.ms),
                 const SizedBox(height: 16),
@@ -51,13 +51,13 @@ class HomePage extends ConsumerWidget {
                 const SizedBox(height: 16),
                 const OnboardingTipsCard(),
                 const SizedBox(height: 32),
-                const _SectionHeader(title: 'Knowledge Base')
+                const _SectionHeader(title: 'Learn')
                     .animate()
                     .fade(duration: 400.ms, delay: 200.ms),
                 const SizedBox(height: 16),
                 const InfoCardsRow(),
                 const SizedBox(height: 32),
-                const _SectionHeader(title: 'App')
+                const _SectionHeader(title: 'More')
                     .animate()
                     .fade(duration: 400.ms, delay: 400.ms),
                 const SizedBox(height: 16),
