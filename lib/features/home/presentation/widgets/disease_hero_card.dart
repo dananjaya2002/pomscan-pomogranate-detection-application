@@ -55,7 +55,7 @@ class DiseaseHeroCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                        FarmerStrings.diseaseCheckTitle,
+                      FarmerStrings.diseaseCheckTitle,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 22,
@@ -65,7 +65,7 @@ class DiseaseHeroCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                        FarmerStrings.diseaseCheckDescription,
+                      FarmerStrings.diseaseCheckDescription,
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.85),
                         fontSize: 14,
@@ -94,7 +94,7 @@ class DiseaseHeroCard extends StatelessWidget {
               ),
               icon: const Icon(Icons.biotech_rounded, size: 22),
               label: const Text(
-                 FarmerStrings.detectButton,
+                FarmerStrings.detectButton,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
               ),
               onPressed: () {

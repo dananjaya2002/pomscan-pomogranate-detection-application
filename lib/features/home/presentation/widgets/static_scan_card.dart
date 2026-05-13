@@ -57,7 +57,7 @@ class StaticScanCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                        FarmerStrings.ripeScanTitle,
+                      FarmerStrings.ripeScanTitle,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 21,
@@ -67,7 +67,7 @@ class StaticScanCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                        FarmerStrings.ripeScanDescription,
+                      FarmerStrings.ripeScanDescription,
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 13,
@@ -105,7 +105,7 @@ class StaticScanCard extends StatelessWidget {
               ),
               icon: const Icon(Icons.image_search_rounded, size: 20),
               label: const Text(
-                 FarmerStrings.detectButton,
+                FarmerStrings.detectButton,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
               onPressed: () {
