@@ -1,5 +1,5 @@
-import '../../../../../../lib/features/detection/domain/entities/bounding_box.dart';
-import '../../../../../../lib/features/detection/domain/entities/detection.dart';
+import 'package:pomescan/features/detection/domain/entities/bounding_box.dart';
+import 'package:pomescan/features/detection/domain/entities/detection.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
