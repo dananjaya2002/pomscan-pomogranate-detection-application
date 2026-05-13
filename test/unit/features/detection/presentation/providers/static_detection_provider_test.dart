@@ -1,13 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../../../lib/core/constants/app_constants.dart';
-import '../../../../../../lib/features/detection/data/repositories/detection_repository_impl.dart';
-import '../../../../../../lib/features/detection/presentation/providers/static_detection_provider.dart';
+import 'package:pomescan/core/constants/app_constants.dart';
+import 'package:pomescan/features/detection/data/repositories/detection_repository_impl.dart';
+import 'package:pomescan/features/detection/presentation/providers/static_detection_provider.dart';
 
 void main() {
   group('StaticDetectionProvider', () {
-    test('staticModelDataSourceProvider returns ModelDataSource with correct path',
+    test(
+        'staticModelDataSourceProvider returns ModelDataSource with correct path',
         () {
       final container = ProviderContainer();
       final dataSource = container.read(staticModelDataSourceProvider);

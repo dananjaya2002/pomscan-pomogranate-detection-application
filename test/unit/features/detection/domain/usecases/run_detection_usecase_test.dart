@@ -10,9 +10,8 @@ import 'package:pomescan/features/detection/domain/usecases/run_detection_usecas
 
 void main() {
   group('RunDetectionUseCase.callStatic', () {
-    test(
-      'delegates arguments to repository.detectOnImage and returns result',
-      () async {
+    test('delegates arguments to repository.detectOnImage and returns result',
+        () async {
       final repository = _FakeDetectionRepository();
       const expected = [
         Detection(
