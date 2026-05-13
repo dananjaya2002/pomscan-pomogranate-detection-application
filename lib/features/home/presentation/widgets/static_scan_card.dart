@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/constants/farmer_strings.dart';
 import '../../../detection/presentation/pages/static_detection_page.dart';
 import 'model_chip.dart';
 
@@ -56,7 +57,7 @@ class StaticScanCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Ripeness Scan',
+                        FarmerStrings.ripeScanTitle,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 21,
@@ -66,7 +67,7 @@ class StaticScanCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     const Text(
-                      'Identify ripe, semi-ripe, and unripe fruits\nfrom one photo in seconds.',
+                        FarmerStrings.ripeScanDescription,
                       style: TextStyle(
                         color: Colors.white70,
                         fontSize: 13,
@@ -104,7 +105,7 @@ class StaticScanCard extends StatelessWidget {
               ),
               icon: const Icon(Icons.image_search_rounded, size: 20),
               label: const Text(
-                'Start Ripeness Scan',
+                 FarmerStrings.detectButton,
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
               ),
               onPressed: () {
