@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../../../core/theme/app_theme.dart';
+import '../../../../core/constants/farmer_strings.dart';
+import '../../../../core/widgets/app_action_button.dart';
 import '../../../disease_detection/presentation/pages/disease_detection_page.dart';
 import 'model_chip.dart';
 
@@ -54,7 +56,7 @@ class DiseaseHeroCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Detect Diseases',
+                      FarmerStrings.diseaseCheckTitle,
                       style: TextStyle(
                         color: AppColors.textPrimary,
                         fontSize: 22,
@@ -64,7 +66,7 @@ class DiseaseHeroCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Check disease symptoms from a photo\nand get care guidance',
+                      FarmerStrings.diseaseCheckDescription,
                       style: TextStyle(
                         color: Colors.white.withValues(alpha: 0.85),
                         fontSize: 14,
@@ -80,22 +82,13 @@ class DiseaseHeroCard extends StatelessWidget {
           const SizedBox(height: 24),
           SizedBox(
             width: double.infinity,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.white.withValues(alpha: 0.15),
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                  side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
-                ),
-                elevation: 0,
-              ),
-              icon: const Icon(Icons.biotech_rounded, size: 22),
-              label: const Text(
-                'Start Disease Scan',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-              ),
+            child: AppActionButton(
+              icon: Icons.biotech_rounded,
+              label: FarmerStrings.detectButton,
+              backgroundColor: Colors.white.withValues(alpha: 0.15),
+              foregroundColor: Colors.white,
+              borderColor: Colors.white.withValues(alpha: 0.3),
+              fontWeight: FontWeight.w700,
               onPressed: () {
                 Navigator.of(context).push(
                   MaterialPageRoute(
