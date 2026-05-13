@@ -8,7 +8,4 @@ linter:
   rules:
     # Allow relative imports in lib/ (common in Flutter apps)
     avoid_relative_lib_imports: false
-    
-    # Relax unused checks during active development
-    unused_import: false
-    unused_local_variable: false
+
