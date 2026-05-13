@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
+import '../../../../core/constants/farmer_strings.dart';
 import '../../../../core/theme/app_theme.dart';
 
 class OnboardingTipsCard extends StatelessWidget {
@@ -14,7 +15,7 @@ class OnboardingTipsCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppDimens.radiusMedium),
         border: Border.all(color: AppColors.divider),
       ),
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: const [
@@ -24,7 +25,7 @@ class OnboardingTipsCard extends StatelessWidget {
                   color: AppColors.harvestingAccent, size: 20),
               SizedBox(width: 8),
               Text(
-                'Photo Tips For Better Results',
+                'Quick photo tips',
                 style: TextStyle(
                   color: AppColors.textPrimary,
                   fontSize: 16,
@@ -33,19 +34,15 @@ class OnboardingTipsCard extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 12),
-          _TipLine(text: 'Use natural daylight when possible.'),
+          SizedBox(height: 10),
+          _TipLine(text: FarmerStrings.tipDaylight),
           SizedBox(height: 8),
-          _TipLine(text: 'Keep one fruit centered and in focus.'),
-          SizedBox(height: 8),
-          _TipLine(text: 'Stay 30-60 cm away from the fruit.'),
-          SizedBox(height: 8),
-          _TipLine(text: 'Avoid blurry photos and heavy shadows.'),
+          _TipLine(text: FarmerStrings.tipDistance),
         ],
       ),
     )
         .animate()
-        .fade(duration: 400.ms, delay: 260.ms)
+        .fade(duration: 350.ms, delay: 220.ms)
         .slideY(begin: 0.05, end: 0, curve: Curves.easeOutQuad);
   }
 }
