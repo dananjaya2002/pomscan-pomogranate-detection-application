@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
-import '../lib/features/detection/presentation/pages/static_detection_page.dart';
+import 'package:pomescan/core/constants/farmer_strings.dart';
+import 'package:pomescan/features/detection/presentation/pages/static_detection_page.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -20,9 +21,10 @@ void main() {
           ),
         );
 
-        expect(find.text('Ripeness Detection'), findsWidgets);
-        expect(find.text('No image selected yet.'), findsOneWidget);
-        expect(find.text('Detected Fruit Status'), findsNothing);
+        expect(find.text(FarmerStrings.ripeScanTitle), findsOneWidget);
+        expect(find.text(FarmerStrings.ripeScanDescription), findsOneWidget);
+        expect(find.text('📸 Pick a photo to start scanning'), findsOneWidget);
+        expect(find.text(FarmerStrings.resultsTitle), findsNothing);
         expect(tester.takeException(), isNull);
       },
     );

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../../../lib/features/detection/domain/entities/bounding_box.dart';
-import '../../../../../../lib/features/detection/domain/entities/detection.dart';
-import '../../../../../../lib/features/detection/presentation/pages/static_detection_page.dart';
+import 'package:pomescan/core/constants/farmer_strings.dart';
+import 'package:pomescan/features/detection/presentation/pages/static_detection_page.dart';
 
 void main() {
   group('StaticDetectionPage', () {
@@ -21,10 +20,11 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(StaticDetectionPage), findsOneWidget);
-        expect(find.text('Ripeness Detection'), findsWidgets);
-        expect(find.text('No image selected yet.'), findsOneWidget);
-        expect(find.text('Take Photo'), findsOneWidget);
-        expect(find.text('Gallery'), findsOneWidget);
+        expect(find.text(FarmerStrings.ripeScanTitle), findsOneWidget);
+        expect(find.text(FarmerStrings.ripeScanDescription), findsOneWidget);
+        expect(find.text('📸 Pick a photo to start scanning'), findsOneWidget);
+        expect(find.text(FarmerStrings.takePhotoButton), findsOneWidget);
+        expect(find.text(FarmerStrings.selectImageButton), findsOneWidget);
         expect(tester.takeException(), isNull);
       },
     );
@@ -40,10 +40,10 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      expect(find.text('Ripeness Detection'), findsWidgets);
-      expect(find.text('Detected Fruit Status'), findsNothing);
-      expect(find.text('Open Harvesting Guide'), findsNothing);
-      expect(find.text('No image selected yet.'), findsOneWidget);
+      expect(find.text(FarmerStrings.ripeScanTitle), findsOneWidget);
+      expect(find.text(FarmerStrings.resultsTitle), findsNothing);
+      expect(find.text(FarmerStrings.viewTreatmentGuide), findsNothing);
+      expect(find.text('📸 Pick a photo to start scanning'), findsOneWidget);
     });
   });
 

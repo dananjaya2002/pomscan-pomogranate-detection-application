@@ -3,3 +3,9 @@ include: package:flutter_lints/flutter.yaml
 analyzer:
   exclude:
     - lib/features/detection/archive/**
+
+linter:
+  rules:
+    # Allow relative imports in lib/ (common in Flutter apps)
+    avoid_relative_lib_imports: false
+

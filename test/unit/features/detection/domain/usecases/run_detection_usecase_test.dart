@@ -3,16 +3,15 @@ import 'dart:typed_data';
 import 'package:camera/camera.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../../../lib/features/detection/domain/entities/bounding_box.dart';
-import '../../../../../../lib/features/detection/domain/entities/detection.dart';
-import '../../../../../../lib/features/detection/domain/repositories/detection_repository.dart';
-import '../../../../../../lib/features/detection/domain/usecases/run_detection_usecase.dart';
+import 'package:pomescan/features/detection/domain/entities/bounding_box.dart';
+import 'package:pomescan/features/detection/domain/entities/detection.dart';
+import 'package:pomescan/features/detection/domain/repositories/detection_repository.dart';
+import 'package:pomescan/features/detection/domain/usecases/run_detection_usecase.dart';
 
 void main() {
   group('RunDetectionUseCase.callStatic', () {
-    test(
-      'delegates arguments to repository.detectOnImage and returns result',
-      () async {
+    test('delegates arguments to repository.detectOnImage and returns result',
+        () async {
       final repository = _FakeDetectionRepository();
       const expected = [
         Detection(

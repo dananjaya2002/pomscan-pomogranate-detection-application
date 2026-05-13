@@ -1,8 +1,7 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../lib/main.dart';
+import 'package:pomescan/main.dart';
 
 void main() {
   group('System workflow', () {

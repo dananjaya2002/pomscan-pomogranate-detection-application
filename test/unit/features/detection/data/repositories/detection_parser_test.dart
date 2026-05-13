@@ -1,9 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../../../lib/core/constants/app_constants.dart';
-import '../../../../../../lib/features/detection/domain/entities/bounding_box.dart';
-import '../../../../../../lib/features/detection/domain/entities/detection.dart';
-import '../../../../../../lib/features/detection/data/repositories/detection_repository_impl.dart';
+import 'package:pomescan/core/constants/app_constants.dart';
+import 'package:pomescan/features/detection/domain/entities/bounding_box.dart';
+import 'package:pomescan/features/detection/domain/entities/detection.dart';
 
 void main() {
   group('DetectionRepositoryImpl._parseYoloOutput', () {
@@ -25,7 +24,8 @@ void main() {
       expect(output[0].length, 2);
     });
 
-    test('handles YOLO26 raw output: [7, 8400] row-major (cx, cy, w, h + 3 classes)',
+    test(
+        'handles YOLO26 raw output: [7, 8400] row-major (cx, cy, w, h + 3 classes)',
         () {
       // Typical shape for YOLO26 int8 export: 7 rows (4 coords + 3 classes), 8400 anchors
       final output = List.generate(
@@ -49,25 +49,17 @@ void main() {
 
     test('clamps and normalizes bounding box coordinates to [0, 1]', () {
       // Simulate coordinates that exceed normalized range
-      const box1 = BoundingBox(x1: -0.1, y1: 0.2, x2: 1.1, y2: 0.8);
-      const box2 = BoundingBox(x1: 0.1, y1: 0.2, x2: 0.3, y2: 0.4);
-
-      // box1 should be clamped to [0,1]
-      expect(box1.x1, -0.1);
-      expect(box2.x1, 0.1);
+      expect(const BoundingBox(x1: -0.1, y1: 0.2, x2: 1.1, y2: 0.8).x1, -0.1);
+      expect(const BoundingBox(x1: 0.1, y1: 0.2, x2: 0.3, y2: 0.4).x1, 0.1);
     });
 
     test('calculates IoU correctly for two overlapping boxes', () {
       const box1 = BoundingBox(x1: 0.0, y1: 0.0, x2: 0.5, y2: 0.5);
       const box2 = BoundingBox(x1: 0.25, y1: 0.25, x2: 0.75, y2: 0.75);
 
-      // box1: area = 0.25, box2: area = 0.25
-      // intersection: [0.25, 0.25, 0.5, 0.5] = 0.0625
-      // union: 0.25 + 0.25 - 0.0625 = 0.4375
-      // IoU: 0.0625 / 0.4375 ≈ 0.1429
-      final area1 = 0.25;
-      final area2 = 0.25;
-      final intersection = 0.0625;
+      final area1 = box1.width * box1.height;
+      final area2 = box2.width * box2.height;
+      final intersection = (0.5 - 0.25) * (0.5 - 0.25);
       final union = area1 + area2 - intersection;
       final expectedIoU = intersection / union;
 
@@ -77,24 +69,24 @@ void main() {
     test(
       'NMS filters overlapping boxes using IoU threshold',
       () {
-      // Two boxes with high IoU (>0.5 threshold): one should be suppressed
-      final detections = [
-        Detection(
-          box: BoundingBox(x1: 0.0, y1: 0.0, x2: 0.5, y2: 0.5),
-          label: 'ripe',
-          confidence: 0.9,
-          cls: DetectionClass.ripe,
-        ),
-        Detection(
-          box: BoundingBox(x1: 0.1, y1: 0.1, x2: 0.6, y2: 0.6),
-          label: 'ripe',
-          confidence: 0.8,
-          cls: DetectionClass.ripe,
-        ),
-      ];
+        // Two boxes with high IoU (>0.5 threshold): one should be suppressed
+        final detections = [
+          Detection(
+            box: BoundingBox(x1: 0.0, y1: 0.0, x2: 0.5, y2: 0.5),
+            label: 'ripe',
+            confidence: 0.9,
+            cls: DetectionClass.ripe,
+          ),
+          Detection(
+            box: BoundingBox(x1: 0.1, y1: 0.1, x2: 0.6, y2: 0.6),
+            label: 'ripe',
+            confidence: 0.8,
+            cls: DetectionClass.ripe,
+          ),
+        ];
 
-      expect(detections.length, 2);
-      // NMS should reduce overlapping predictions
+        expect(detections.length, 2);
+        // NMS should reduce overlapping predictions
       },
     );
   });
@@ -104,11 +96,8 @@ void main() {
       // Letterbox: source 640x480 fitted into 640x640 canvas
       // scale = min(640/640, 640/480) = 0.75
       // resized: 480x360, padX=80, padY=140
-      final sourceWidth = 640;
-      final sourceHeight = 480;
       final scale = 0.75;
       final padX = 80.0;
-      final padY = 140.0;
 
       // Model prediction at normalized [0.2, 0.2, 0.4, 0.4]
       const modelBox = BoundingBox(x1: 0.2, y1: 0.2, x2: 0.4, y2: 0.4);
@@ -123,27 +112,27 @@ void main() {
 
   group('DetectionRepositoryImpl confidence thresholding', () {
     test('filters detections below confidence threshold', () {
-        final detections = [
-          Detection(
-            box: BoundingBox(x1: 0.0, y1: 0.0, x2: 0.1, y2: 0.1),
-            label: 'ripe',
-            confidence: 0.95,
-            cls: DetectionClass.ripe,
-          ),
-          Detection(
-            box: BoundingBox(x1: 0.5, y1: 0.5, x2: 0.6, y2: 0.6),
-            label: 'unripe',
-            confidence: 0.3,
-            cls: DetectionClass.unripe,
-          ),
-        ];
+      final detections = [
+        Detection(
+          box: BoundingBox(x1: 0.0, y1: 0.0, x2: 0.1, y2: 0.1),
+          label: 'ripe',
+          confidence: 0.95,
+          cls: DetectionClass.ripe,
+        ),
+        Detection(
+          box: BoundingBox(x1: 0.5, y1: 0.5, x2: 0.6, y2: 0.6),
+          label: 'unripe',
+          confidence: 0.3,
+          cls: DetectionClass.unripe,
+        ),
+      ];
 
-        final filtered = detections
-            .where((d) => d.confidence >= AppConstants.confidenceThreshold)
-            .toList();
+      final filtered = detections
+          .where((d) => d.confidence >= AppConstants.confidenceThreshold)
+          .toList();
 
-        expect(filtered.length, 1);
-        expect(filtered.first.label, 'ripe');
+      expect(filtered.length, 1);
+      expect(filtered.first.label, 'ripe');
     });
   });
 }

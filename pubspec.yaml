@@ -1,4 +1,4 @@
-name: Pomescan
+name: pomescan
 description: "AI-powered plant disease detection app using Flutter and TensorFlow Lite."
 publish_to: "none"
 version: 0.1.0+1
