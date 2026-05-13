@@ -3,7 +3,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_application_1/main.dart';
+import '../lib/main.dart';
 
 void main() {
   testWidgets('App launches without errors', (WidgetTester tester) async {

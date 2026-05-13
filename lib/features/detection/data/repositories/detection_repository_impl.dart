@@ -187,9 +187,9 @@ final class DetectionRepositoryImpl implements DetectionRepository {
     );
   }
 
-  //  YOLO11 output decoding
+  //  YOLO26 output decoding
 
-  /// Decodes the YOLO11 output tensor.
+  /// Decodes the YOLO26 output tensor.
   ///
   /// [output] has shape [rows][anchors]:
   ///   - rows 0-3 : cx, cy, w, h in [0, inputSize] pixel space

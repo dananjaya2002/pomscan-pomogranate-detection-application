@@ -1,0 +1,40 @@
+name: tests
+
+on:
+  push:
+    branches:
+      - main
+      - feat/**
+  pull_request:
+
+jobs:
+  analyze-and-unit:
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Analyze
+        run: flutter analyze
+
+      - name: Run unit tests
+        run: flutter test test/unit
+
+      - name: Upload test report artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-artifacts
+          path: |
+            test/
+            integration_test/

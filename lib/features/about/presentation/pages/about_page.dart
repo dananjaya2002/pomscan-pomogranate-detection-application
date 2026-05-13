@@ -90,7 +90,7 @@ class AboutPage extends StatelessWidget {
                 'PomeScan is a final-year research project that uses on-device '
                 'artificial intelligence to detect and classify the ripeness of '
                 'pomegranate fruits in real time directly from the phone camera.\n\n'
-                'The AI model — YOLO11 exported to TFLite — classifies each '
+                'The AI model YOLO26 exported to TFLite classifies each '
                 'detected fruit as Ripe, Semi-Ripe, or Unripe at up to 15 '
                 'frames per second, enabling farmers to make precise, '
                 'data-driven harvest decisions without any internet connection.',
@@ -119,14 +119,13 @@ class AboutPage extends StatelessWidget {
                   spacing: 8,
                   runSpacing: 8,
                   children: [
-                    _TechChip('Flutter 3.x', AppColors.accent),
-                    _TechChip('Dart 3.x', AppColors.accent),
-                    _TechChip('YOLO11', AppColors.primaryLight),
+                    _TechChip('Flutter', AppColors.accent),
+                    _TechChip('Dart', AppColors.accent),
+                    _TechChip('YOLO26', AppColors.primaryLight),
                     _TechChip('TFLite 0.12', AppColors.primaryLight),
                     _TechChip('GPU Delegate', AppColors.harvestingAccent),
                     _TechChip('NNAPI', AppColors.harvestingAccent),
-                    _TechChip('Riverpod 2.x', AppColors.semiRipe),
-                    _TechChip('Dart Isolates', AppColors.semiRipe),
+                    _TechChip('Riverpod', AppColors.semiRipe),
                   ],
                 ),
               ],

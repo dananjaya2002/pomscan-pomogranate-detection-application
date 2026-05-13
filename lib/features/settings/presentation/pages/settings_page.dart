@@ -81,7 +81,7 @@ class SettingsPage extends ConsumerWidget {
           _SectionHeader(title: 'Information'),
           _SettingsCard(
             children: [
-              _InfoRow(label: 'Model', value: 'YOLO11 (3-class)'),
+              _InfoRow(label: 'Model', value: 'YOLO26n (3-class)'),
               _Divider(),
               _InfoRow(
                 label: 'Input Size',
