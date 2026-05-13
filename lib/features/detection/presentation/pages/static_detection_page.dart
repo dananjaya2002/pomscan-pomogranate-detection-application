@@ -9,6 +9,7 @@ import '../../../../core/theme/app_theme.dart';
 import '../../../info/domain/entities/info_item.dart';
 import '../../../../core/constants/farmer_strings.dart';
 import '../../../../core/widgets/visibility_widgets.dart';
+import '../../../../core/widgets/error_widgets.dart';
 import '../../../info/presentation/pages/info_list_page.dart';
 import '../../domain/entities/detection.dart';
 import '../providers/static_detection_provider.dart';
@@ -28,6 +29,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
   bool _isLoadingModel = false;
   Size? _imageNaturalSize;
   String? _resultMessage;
+  String? _scanError;
 
   int get _ripeCount =>
       _detections?.where((d) => d.label == 'ripe').length ?? 0;
@@ -42,11 +44,21 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
     final pickedFile = await picker.pickImage(source: source);
 
     if (pickedFile != null) {
+      final selectedFile = File(pickedFile.path);
+      final validationMessage = validateImageFile(await selectedFile.length());
+      if (validationMessage != null) {
+        if (mounted) {
+          showErrorSnackBar(context, message: validationMessage);
+        }
+        return;
+      }
+
       setState(() {
-        _image = File(pickedFile.path);
+        _image = selectedFile;
         _detections = null; // Reset detections on new image
         _imageNaturalSize = null;
         _resultMessage = null;
+        _scanError = null;
       });
       _runDetection();
     }
@@ -58,6 +70,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
     setState(() {
       _isProcessing = true;
       _resultMessage = null;
+      _scanError = null;
     });
 
     try {
@@ -100,8 +113,13 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
           _detections = results;
           _imageNaturalSize = naturalSize;
           _isProcessing = false;
-          _resultMessage =
-              results.isEmpty ? 'No fruit detected in this image.' : null;
+          _resultMessage = results.isEmpty
+              ? FarmerStrings.noFruitDetected
+              : FarmerStrings.resultsSummary(
+                  _ripeCount,
+                  _semiRipeCount,
+                  _unripeCount,
+                );
         });
       }
     } catch (e) {
@@ -109,18 +127,12 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
         setState(() {
           _isProcessing = false;
           _isLoadingModel = false;
+          _scanError = getFriendlyErrorMessage(e);
         });
-        final error = '$e'.toLowerCase();
-        final message = error.contains('could not decode image') ||
-                error.contains('selected image is empty')
-            ? FarmerStrings.errorImageInvalid
-            : error.contains('shape mismatch') || error.contains('tensor')
-              ? FarmerStrings.errorProcessing
-              : error.contains('out of memory')
-                ? FarmerStrings.errorOutOfMemory
-                : FarmerStrings.errorGeneral;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
+        showErrorSnackBar(
+          context,
+          message: _scanError ?? FarmerStrings.errorGeneral,
+          onRetry: () => _pickImage(ImageSource.gallery),
         );
       }
     }
@@ -139,7 +151,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
-          title: const Text(FarmerStrings.ripeScanTitle),
+        title: const Text(FarmerStrings.ripeScanTitle),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -155,7 +167,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                   border: Border.all(color: AppColors.cardBorder),
                 ),
                 child: const Text(
-                    FarmerStrings.ripeScanDescription,
+                  FarmerStrings.ripeScanDescription,
                   style: TextStyle(
                     color: AppColors.textSecondary,
                     fontSize: 13,
@@ -174,7 +186,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                         ? const Padding(
                             padding: EdgeInsets.symmetric(vertical: 50),
                             child: Text(
-                                '📸 Pick a photo to start scanning',
+                              '📸 Pick a photo to start scanning',
                               style: TextStyle(
                                 color: AppColors.textSecondary,
                                 fontWeight: FontWeight.w600,
@@ -196,37 +208,54 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                                   ),
                                 ),
                               if (_isProcessing)
-                                  Positioned.fill(
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: ProcessingStatusOverlay(
-                                          status: 'processing',
-                                          statusTitle: FarmerStrings.statusAnalyzing,
-                                          description: FarmerStrings.tipAnalysisTime,
-                                        ),
+                                Positioned.fill(
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: ProcessingStatusOverlay(
+                                        status: 'processing',
+                                        statusTitle:
+                                            FarmerStrings.statusAnalyzing,
+                                        description:
+                                            FarmerStrings.tipAnalysisTime,
                                       ),
                                     ),
                                   ),
+                                ),
                               if (_isLoadingModel)
-                                  Positioned.fill(
-                                    child: Center(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(20),
-                                        child: ProcessingStatusOverlay(
-                                          status: 'loading',
-                                          statusTitle: FarmerStrings.statusLoading,
-                                          description: FarmerStrings.tipAnalysisTime,
-                                        ),
+                                Positioned.fill(
+                                  child: Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(20),
+                                      child: ProcessingStatusOverlay(
+                                        status: 'loading',
+                                        statusTitle:
+                                            FarmerStrings.statusLoading,
+                                        description:
+                                            FarmerStrings.tipAnalysisTime,
                                       ),
                                     ),
                                   ),
+                                ),
                             ],
                           ),
                   ),
                 ),
               ),
               const SizedBox(height: 14),
+              if (_scanError != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 14),
+                  child: ErrorStateWidget(
+                    errorMessage: _scanError!,
+                    onRetry: () => _pickImage(ImageSource.gallery),
+                    onDismiss: () {
+                      setState(() {
+                        _scanError = null;
+                      });
+                    },
+                  ),
+                ),
               if (_detections != null && _detections!.isNotEmpty)
                 Container(
                   padding: const EdgeInsets.all(14),
@@ -239,7 +268,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                          FarmerStrings.resultsTitle,
+                        FarmerStrings.resultsTitle,
                         style: TextStyle(
                           color: AppColors.textPrimary,
                           fontSize: 16,
@@ -252,17 +281,17 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                         runSpacing: 8,
                         children: [
                           _StatusChip(
-                            label: 'Ripe',
+                            label: FarmerStrings.ripeLabel,
                             count: _ripeCount,
                             color: AppColors.ripe,
                           ),
                           _StatusChip(
-                            label: 'Semi-ripe',
+                            label: FarmerStrings.semiRipeLabel,
                             count: _semiRipeCount,
                             color: AppColors.semiRipe,
                           ),
                           _StatusChip(
-                            label: 'Unripe',
+                            label: FarmerStrings.unripeLabel,
                             count: _unripeCount,
                             color: AppColors.unripe,
                           ),
@@ -275,12 +304,13 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                           child: OutlinedButton.icon(
                             onPressed: _openHarvestingGuide,
                             icon: const Icon(Icons.menu_book_rounded),
-                              label: const Text(FarmerStrings.viewTreatmentGuide),
+                            label: const Text(FarmerStrings.viewTreatmentGuide),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.harvestingAccent,
                               side: const BorderSide(
                                 color: AppColors.harvestingAccent,
                               ),
+                              minimumSize: const Size.fromHeight(48),
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
                           ),
@@ -311,6 +341,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                       icon: const Icon(Icons.camera_alt),
                       label: const Text(FarmerStrings.takePhotoButton),
                       style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),
@@ -324,6 +355,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
                       icon: const Icon(Icons.photo_library),
                       label: const Text(FarmerStrings.selectImageButton),
                       style: ElevatedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(48),
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                     ),
