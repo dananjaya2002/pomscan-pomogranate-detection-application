@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../../../lib/features/detection/domain/entities/bounding_box.dart';
-import '../../../../../../lib/features/detection/domain/entities/detection.dart';
-import '../../../../../../lib/features/detection/presentation/pages/static_detection_page.dart';
+import 'package:pomescan/features/detection/presentation/pages/static_detection_page.dart';
 
 void main() {
   group('StaticDetectionPage', () {

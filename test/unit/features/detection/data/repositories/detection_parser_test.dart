@@ -24,7 +24,8 @@ void main() {
       expect(output[0].length, 2);
     });
 
-    test('handles YOLO26 raw output: [7, 8400] row-major (cx, cy, w, h + 3 classes)',
+    test(
+        'handles YOLO26 raw output: [7, 8400] row-major (cx, cy, w, h + 3 classes)',
         () {
       // Typical shape for YOLO26 int8 export: 7 rows (4 coords + 3 classes), 8400 anchors
       final output = List.generate(
@@ -68,24 +69,24 @@ void main() {
     test(
       'NMS filters overlapping boxes using IoU threshold',
       () {
-      // Two boxes with high IoU (>0.5 threshold): one should be suppressed
-      final detections = [
-        Detection(
-          box: BoundingBox(x1: 0.0, y1: 0.0, x2: 0.5, y2: 0.5),
-          label: 'ripe',
-          confidence: 0.9,
-          cls: DetectionClass.ripe,
-        ),
-        Detection(
-          box: BoundingBox(x1: 0.1, y1: 0.1, x2: 0.6, y2: 0.6),
-          label: 'ripe',
-          confidence: 0.8,
-          cls: DetectionClass.ripe,
-        ),
-      ];
+        // Two boxes with high IoU (>0.5 threshold): one should be suppressed
+        final detections = [
+          Detection(
+            box: BoundingBox(x1: 0.0, y1: 0.0, x2: 0.5, y2: 0.5),
+            label: 'ripe',
+            confidence: 0.9,
+            cls: DetectionClass.ripe,
+          ),
+          Detection(
+            box: BoundingBox(x1: 0.1, y1: 0.1, x2: 0.6, y2: 0.6),
+            label: 'ripe',
+            confidence: 0.8,
+            cls: DetectionClass.ripe,
+          ),
+        ];
 
-      expect(detections.length, 2);
-      // NMS should reduce overlapping predictions
+        expect(detections.length, 2);
+        // NMS should reduce overlapping predictions
       },
     );
   });
@@ -111,27 +112,27 @@ void main() {
 
   group('DetectionRepositoryImpl confidence thresholding', () {
     test('filters detections below confidence threshold', () {
-        final detections = [
-          Detection(
-            box: BoundingBox(x1: 0.0, y1: 0.0, x2: 0.1, y2: 0.1),
-            label: 'ripe',
-            confidence: 0.95,
-            cls: DetectionClass.ripe,
-          ),
-          Detection(
-            box: BoundingBox(x1: 0.5, y1: 0.5, x2: 0.6, y2: 0.6),
-            label: 'unripe',
-            confidence: 0.3,
-            cls: DetectionClass.unripe,
-          ),
-        ];
+      final detections = [
+        Detection(
+          box: BoundingBox(x1: 0.0, y1: 0.0, x2: 0.1, y2: 0.1),
+          label: 'ripe',
+          confidence: 0.95,
+          cls: DetectionClass.ripe,
+        ),
+        Detection(
+          box: BoundingBox(x1: 0.5, y1: 0.5, x2: 0.6, y2: 0.6),
+          label: 'unripe',
+          confidence: 0.3,
+          cls: DetectionClass.unripe,
+        ),
+      ];
 
-        final filtered = detections
-            .where((d) => d.confidence >= AppConstants.confidenceThreshold)
-            .toList();
+      final filtered = detections
+          .where((d) => d.confidence >= AppConstants.confidenceThreshold)
+          .toList();
 
-        expect(filtered.length, 1);
-        expect(filtered.first.label, 'ripe');
+      expect(filtered.length, 1);
+      expect(filtered.first.label, 'ripe');
     });
   });
 }
