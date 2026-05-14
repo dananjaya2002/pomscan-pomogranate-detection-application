@@ -10,7 +10,6 @@ Future<void> main() async {
   await initDependencies();
 
   runApp(
-    // ProviderScope is required at the root for Riverpod
     const ProviderScope(child: PomegranateDetectorApp()),
   );
 }

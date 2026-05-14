@@ -1,4 +1,3 @@
-/// Generic list page for a knowledge-base section (diseases / plantation / harvesting).
 library;
 
 import 'package:flutter/material.dart';
@@ -85,7 +84,6 @@ class _ItemCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icon container
               Container(
                 width: 48,
                 height: 48,

@@ -55,7 +55,7 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
 
       setState(() {
         _image = selectedFile;
-        _detections = null; // Reset detections on new image
+        _detections = null;
         _imageNaturalSize = null;
         _resultMessage = null;
         _scanError = null;
@@ -79,7 +79,6 @@ class _StaticDetectionPageState extends ConsumerState<StaticDetectionPage> {
         throw StateError('Selected image is empty. Please choose another one.');
       }
 
-      // Decode image to get dimensions for inference
       final decodedImage = await decodeImageFromList(bytes);
       if (decodedImage.width <= 0 || decodedImage.height <= 0) {
         throw StateError('Could not decode image dimensions.');
@@ -406,9 +405,6 @@ class _StaticBBoxPainter extends CustomPainter {
   const _StaticBBoxPainter(this.detections, this.naturalImageSize);
   final List<Detection> detections;
 
-  /// The original pixel dimensions of the decoded image.
-  /// Used to correctly map normalised model coordinates to the
-  /// letterboxed/pillarboxed image rect rendered inside the canvas.
   final Size naturalImageSize;
 
   static const double _strokeWidth = 3.6;
@@ -416,9 +412,6 @@ class _StaticBBoxPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    // Compute the actual image rect within the canvas.
-    // Image.file uses BoxFit.contain by default, so the rendered image may
-    // have horizontal or vertical letterbox bars.
     final FittedSizes fitted =
         applyBoxFit(BoxFit.contain, naturalImageSize, size);
     final double offsetX = (size.width - fitted.destination.width) / 2;
@@ -429,7 +422,6 @@ class _StaticBBoxPainter extends CustomPainter {
     for (final detection in detections) {
       final box = detection.box;
 
-      // Map normalised [0,1] model coords to the rendered image rect.
       final rawRect = Rect.fromLTRB(
         offsetX + box.x1 * imgW,
         offsetY + box.y1 * imgH,
@@ -467,13 +459,11 @@ class _StaticBBoxPainter extends CustomPainter {
     final borderStroke = isNearFullImage ? 3.8 : 2.6;
     final borderAlpha = isNearFullImage ? 255 : 240;
 
-    // ── Stronger semi-transparent fill for visibility ───────────────────
     canvas.drawRRect(
       RRect.fromRectAndRadius(rect, const Radius.circular(6)),
       Paint()..color = color.withAlpha(36),
     );
 
-    // ── Dark outline below color stroke for better contrast on bright images
     canvas.drawRRect(
       RRect.fromRectAndRadius(rect, const Radius.circular(6)),
       Paint()
@@ -482,7 +472,6 @@ class _StaticBBoxPainter extends CustomPainter {
         ..strokeWidth = borderStroke + 1.6,
     );
 
-    // ── Full rounded-rect border ────────────────────────────────────────
     canvas.drawRRect(
       RRect.fromRectAndRadius(rect, const Radius.circular(6)),
       Paint()
@@ -502,7 +491,6 @@ class _StaticBBoxPainter extends CustomPainter {
       );
     }
 
-    // ── Corner accent brackets ──────────────────────────────────────────
     final Paint bracketPaint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
@@ -519,44 +507,35 @@ class _StaticBBoxPainter extends CustomPainter {
     final double cs = cl.clamp(0.0, rect.height * 0.35);
 
     canvas
-      // Top-left shadow
       ..drawLine(
           rect.topLeft, rect.topLeft.translate(cl, 0), bracketShadowPaint)
       ..drawLine(
           rect.topLeft, rect.topLeft.translate(0, cs), bracketShadowPaint)
-      // Top-right shadow
       ..drawLine(
           rect.topRight, rect.topRight.translate(-cl, 0), bracketShadowPaint)
       ..drawLine(
           rect.topRight, rect.topRight.translate(0, cs), bracketShadowPaint)
-      // Bottom-left shadow
       ..drawLine(
           rect.bottomLeft, rect.bottomLeft.translate(cl, 0), bracketShadowPaint)
       ..drawLine(rect.bottomLeft, rect.bottomLeft.translate(0, -cs),
           bracketShadowPaint)
-      // Bottom-right shadow
       ..drawLine(rect.bottomRight, rect.bottomRight.translate(-cl, 0),
           bracketShadowPaint)
       ..drawLine(rect.bottomRight, rect.bottomRight.translate(0, -cs),
           bracketShadowPaint)
-      // Top-left
       ..drawLine(rect.topLeft, rect.topLeft.translate(cl, 0), bracketPaint)
       ..drawLine(rect.topLeft, rect.topLeft.translate(0, cs), bracketPaint)
-      // Top-right
       ..drawLine(rect.topRight, rect.topRight.translate(-cl, 0), bracketPaint)
       ..drawLine(rect.topRight, rect.topRight.translate(0, cs), bracketPaint)
-      // Bottom-left
       ..drawLine(
           rect.bottomLeft, rect.bottomLeft.translate(cl, 0), bracketPaint)
       ..drawLine(
           rect.bottomLeft, rect.bottomLeft.translate(0, -cs), bracketPaint)
-      // Bottom-right
       ..drawLine(
           rect.bottomRight, rect.bottomRight.translate(-cl, 0), bracketPaint)
       ..drawLine(
           rect.bottomRight, rect.bottomRight.translate(0, -cs), bracketPaint);
 
-    // ── Label pill ──────────────────────────────────────────────────────
     _drawLabel(canvas, canvasSize, rect, detection, color);
   }
 

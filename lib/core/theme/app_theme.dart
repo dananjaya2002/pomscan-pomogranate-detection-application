@@ -1,6 +1,3 @@
-/// Central design system for PomeScan.
-///
-/// Uses a dark-green + pomegranate-red palette, Material 3, and Inter font.
 library;
 
 import 'package:flutter/material.dart';
@@ -8,34 +5,28 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 abstract final class AppColors {
-  // ── Backgrounds ────────────────────────────────────────────────────────────
-  static const Color background = Color(0xFF07140B); // Deeper background
-  static const Color surface = Color(0xFF112316); // Slightly darker surface
+  static const Color background = Color(0xFF07140B);
+  static const Color surface = Color(0xFF112316);
   static const Color surfaceVariant = Color(0xFF183220);
   static const Color cardBorder = Color(0xFF22422C);
 
-  // ── Primary (deep green) ───────────────────────────────────────────────────
   static const Color primary = Color(0xFF2D6A4F);
   static const Color primaryLight = Color(0xFF40916C);
   static const Color primaryDark = Color(0xFF1B4332);
 
-  // ── Accent (pomegranate red) ───────────────────────────────────────────────
   static const Color accent = Color(0xFFC0392B);
   static const Color accentLight = Color(0xFFE74C3C);
   static const Color accentMuted = Color(0xFF922B21);
 
-  // ── Semantic ───────────────────────────────────────────────────────────────
   static const Color ripe = Color(0xFF4CAF50);
   static const Color semiRipe = Color(0xFFFF9800);
   static const Color unripe = Color(0xFFF44336);
 
-  // ── Neutral ────────────────────────────────────────────────────────────────
-  static const Color textPrimary = Color(0xFFF4F6F6); // Brighter white
-  static const Color textSecondary = Color(0xFFAAB7B8); // Brighter grey
+  static const Color textPrimary = Color(0xFFF4F6F6);
+  static const Color textSecondary = Color(0xFFAAB7B8);
   static const Color textMuted = Color(0xFF717D7E);
   static const Color divider = Color(0xFF1A3022);
 
-  // ── Info card accents ──────────────────────────────────────────────────────
   static const Color diseasesAccent = Color(0xFFC0392B);
   static const Color plantationAccent = Color(0xFF27AE60);
   static const Color harvestingAccent = Color(0xFFD4AC0D);
@@ -43,7 +34,7 @@ abstract final class AppColors {
 
 abstract final class AppDimens {
   static const double radiusSmall = 12.0;
-  static const double radiusMedium = 20.0; // Rounder cards
+  static const double radiusMedium = 20.0;
   static const double radiusLarge = 28.0;
   static const double radiusXL = 36.0;
 
@@ -86,7 +77,7 @@ abstract final class AppTheme {
           color: AppColors.textPrimary,
           fontSize: 20,
           fontWeight: FontWeight.w700,
-          letterSpacing: -0.5, // tighter tracking for modern feel
+          letterSpacing: -0.5,
         ),
       ),
       cardTheme: CardThemeData(
@@ -206,8 +197,6 @@ abstract final class AppTheme {
       ),
     );
   }
-
-  // ── Reusable gradient helpers ──────────────────────────────────────────────
 
   static BoxDecoration cardDecoration({Color? borderColor}) => BoxDecoration(
         color: AppColors.surface,

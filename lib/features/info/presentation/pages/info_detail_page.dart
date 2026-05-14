@@ -1,4 +1,3 @@
-/// Detail view for a single knowledge-base item.
 library;
 
 import 'package:flutter/material.dart';
@@ -18,7 +17,6 @@ class InfoDetailPage extends StatelessWidget {
       backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
-          // ── App bar ───────────────────────────────────────────────────────
           SliverAppBar(
             expandedHeight: 160,
             pinned: true,
@@ -55,15 +53,12 @@ class InfoDetailPage extends StatelessWidget {
               ),
             ),
           ),
-
-          // ── Content ───────────────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(AppDimens.paddingMedium),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Description
                   _Section(
                     title: 'Overview',
                     accent: accent,
@@ -74,8 +69,6 @@ class InfoDetailPage extends StatelessWidget {
                           ),
                     ),
                   ),
-
-                  // Detail fields (severity, cause, symptoms etc.)
                   for (final entry in item.details.entries)
                     _Section(
                       title: _fieldLabel(entry.key),
@@ -87,8 +80,6 @@ class InfoDetailPage extends StatelessWidget {
                             ),
                       ),
                     ),
-
-                  // Tips
                   if (item.tips.isNotEmpty)
                     _Section(
                       title: 'Key Tips',
@@ -99,7 +90,6 @@ class InfoDetailPage extends StatelessWidget {
                             .toList(),
                       ),
                     ),
-
                   const SizedBox(height: 40),
                 ],
               ),

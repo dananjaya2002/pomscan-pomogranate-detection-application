@@ -1,4 +1,3 @@
-/// Home dashboard — entry point after the splash screen.
 library;
 
 import 'package:flutter/material.dart';
@@ -10,7 +9,6 @@ import '../../../detection/presentation/providers/static_detection_provider.dart
 import '../../../../core/constants/farmer_strings.dart';
 import '../../../disease_detection/presentation/providers/disease_detection_provider.dart';
 
-// Extracted widgets
 import '../widgets/static_scan_card.dart';
 import '../widgets/disease_hero_card.dart';
 import '../widgets/knowledge_base_cards.dart';
@@ -144,10 +142,6 @@ class _HomeLogoMark extends StatelessWidget {
     );
   }
 }
-
-// ---------------------------------------------------------------------------
-// Section header
-// ---------------------------------------------------------------------------
 
 class _SectionHeader extends StatelessWidget {
   const _SectionHeader({required this.title});

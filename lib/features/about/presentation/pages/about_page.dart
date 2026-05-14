@@ -1,4 +1,3 @@
-/// About Us page.
 library;
 
 import 'package:flutter/material.dart';
@@ -21,7 +20,6 @@ class AboutPage extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 40),
         children: [
-          // ── Logo & name ───────────────────────────────────────────────────
           Center(
             child: Column(
               children: [
@@ -80,10 +78,7 @@ class AboutPage extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 28),
-
-          // ── Project description ───────────────────────────────────────────
           _InfoCard(
             title: 'About the Project',
             content:
@@ -95,10 +90,7 @@ class AboutPage extends StatelessWidget {
                 'frames per second, enabling farmers to make precise, '
                 'data-driven harvest decisions without any internet connection.',
           ),
-
           const SizedBox(height: 12),
-
-          // ── Tech stack ────────────────────────────────────────────────────
           Container(
             decoration: AppTheme.cardDecoration(),
             padding: const EdgeInsets.all(16),
@@ -131,10 +123,7 @@ class AboutPage extends StatelessWidget {
               ],
             ),
           ),
-
           const SizedBox(height: 12),
-
-          // ── Project context ───────────────────────────────────────────────
           _InfoCard(
             title: 'Academic Context',
             content: 'Department of Computer Engineering\n'
@@ -145,10 +134,7 @@ class AboutPage extends StatelessWidget {
                 'hardware acceleration delegates and an efficient inference '
                 'pipeline optimised for real-time agricultural applications.',
           ),
-
           const SizedBox(height: 12),
-
-          // ── Disclaimer ────────────────────────────────────────────────────
           Container(
             decoration: AppTheme.cardDecoration(
               borderColor: AppColors.textMuted.withAlpha(40),

@@ -1,6 +1,3 @@
-/// Card widget that displays the disease classification result.
-library;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -19,14 +16,10 @@ class DiseaseResultCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (result.isHealthy) {
-      return _HealthyCard();
-    }
+    if (result.isHealthy) return _HealthyCard();
     return _DiseaseCard(result: result, ref: ref, context: context);
   }
 }
-
-// ── Healthy result ────────────────────────────────────────────────────────────
 
 class _HealthyCard extends StatelessWidget {
   @override
@@ -82,8 +75,6 @@ class _HealthyCard extends StatelessWidget {
   }
 }
 
-// ── Disease result ────────────────────────────────────────────────────────────
-
 class _DiseaseCard extends StatelessWidget {
   const _DiseaseCard({
     required this.result,
@@ -99,7 +90,6 @@ class _DiseaseCard extends StatelessWidget {
       AppConstants.diseaseColors[result.label] ?? AppColors.accent;
 
   String get _displayName {
-    // Humanise raw model class names
     switch (result.label) {
       case 'Bacterial_Blight':
         return 'Bacterial Blight';
@@ -121,7 +111,6 @@ class _DiseaseCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -175,14 +164,12 @@ class _DiseaseCard extends StatelessWidget {
               ],
             ),
           ),
-          // Confidence bar
           LinearProgressIndicator(
             value: result.confidence,
             backgroundColor: AppColors.background,
             valueColor: AlwaysStoppedAnimation<Color>(_accentColor),
             minHeight: 3,
           ),
-          // Action
           Padding(
             padding: const EdgeInsets.all(14),
             child:
@@ -209,7 +196,7 @@ class _ConfidenceBadge extends StatelessWidget {
         border: Border.all(color: color.withAlpha(80)),
       ),
       child: Text(
-        FarmerStrings.confidenceDescription(confidence),
+        '${(confidence * 100).toStringAsFixed(0)}%',
         style: TextStyle(
           color: color,
           fontSize: 13,

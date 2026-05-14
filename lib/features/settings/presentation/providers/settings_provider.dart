@@ -1,4 +1,3 @@
-/// Riverpod providers for app settings.
 library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -6,13 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/repositories/settings_repository.dart';
 import '../../domain/entities/app_settings.dart';
 
-// ── Repository provider ───────────────────────────────────────────────────────
-
 final settingsRepositoryProvider = Provider<SettingsRepository>(
   (_) => const SettingsRepository(),
 );
-
-// ── Notifier ──────────────────────────────────────────────────────────────────
 
 final class SettingsNotifier extends AsyncNotifier<AppSettings> {
   @override
@@ -20,7 +15,6 @@ final class SettingsNotifier extends AsyncNotifier<AppSettings> {
     return ref.read(settingsRepositoryProvider).load();
   }
 
-  /// Returns the current settings or defaults if still loading.
   AppSettings get current => state.valueOrNull ?? const AppSettings();
 
   Future<void> updateCameraQuality(CameraQuality quality) =>

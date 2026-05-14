@@ -1,22 +1,9 @@
-/// Top-level preprocessing utilities for camera frames.
-///
-/// All functions here are **top-level** (not class members) so they can be
-/// passed directly to Flutter's [compute] function, which runs them in a
-/// background isolate.  No Flutter/Material types are imported — only Dart
-/// primitives and the pure-Dart `image` package — ensuring safe serialisation
-/// across isolate boundaries.
 library;
 
 import 'dart:typed_data';
 
 import 'package:image/image.dart' as img;
 
-// ── Input data class ──────────────────────────────────────────────────────────
-
-/// All data needed to preprocess a raw camera frame into a TFLite input tensor.
-///
-/// Every field is a primitive type or [Uint8List] so the object can be
-/// serialised through Flutter's isolate `SendPort` (required by [compute]).
 final class FramePreprocessInput {
   const FramePreprocessInput({
     required this.yBytes,
@@ -33,64 +20,35 @@ final class FramePreprocessInput {
     this.bgraBytes,
   });
 
-  /// Y-plane bytes from the camera (also used as the single plane for BGRA).
   final Uint8List yBytes;
 
-  /// U/Cb chroma plane bytes (YUV420 only).
   final Uint8List uBytes;
 
-  /// V/Cr chroma plane bytes (YUV420 only).
   final Uint8List vBytes;
 
-  /// Camera frame width in pixels.
   final int width;
 
-  /// Camera frame height in pixels.
   final int height;
 
-  /// Bytes-per-row for the Y plane.
   final int yRowStride;
 
-  /// Bytes-per-row for the U/V planes.
   final int uvRowStride;
 
-  /// Bytes-per-pixel stride for the UV plane (interleaved NV12/NV21 = 2).
   final int uvPixelStride;
 
-  /// The final spatial size sent to the TFLite model (e.g. 640).
-  /// The output Float32List will have [modelInputSize * modelInputSize * 3] elements.
   final int modelInputSize;
 
-  /// Intermediate downsampling size that controls quality vs speed.
-  /// Pixels are sampled at step = max(width,height) / preprocessSize.
-  /// Values: 320 (fastest), 416 (balanced), 640 (full quality).
   final int preprocessSize;
 
-  /// `true` when the camera supplies BGRA8888 (iOS default).
   final bool isBgra;
 
-  /// Raw BGRA bytes — only populated when [isBgra] is `true`.
   final Uint8List? bgraBytes;
 }
 
-// ── Public entry point ────────────────────────────────────────────────────────
-
-/// Converts a raw camera frame ([FramePreprocessInput]) to a normalised
-/// [Float32List] ready for the TFLite interpreter.
-///
-/// This is a **top-level function** so it can be passed to [compute]:
-/// ```dart
-/// final buffer = await compute(preprocessCameraFrame, input);
-/// ```
-///
-/// Handles:
-///  - YUV420 / NV21 (Android, step-sampled for speed when preprocessSize < 640)
-///  - BGRA8888 (iOS)
 Float32List preprocessCameraFrame(FramePreprocessInput input) {
   final img.Image raw;
 
   if (input.isBgra && input.bgraBytes != null) {
-    // iOS BGRA8888 — fast byte copy via image package
     raw = img.Image.fromBytes(
       width: input.width,
       height: input.height,
@@ -104,17 +62,7 @@ Float32List preprocessCameraFrame(FramePreprocessInput input) {
   return _imageToFloat32(raw, input.modelInputSize);
 }
 
-// ── Preprocessing helpers (package-private) ───────────────────────────────────
-
-/// Converts a YUV420/NV21 camera frame to an [img.Image].
-///
-/// When [FramePreprocessInput.preprocessSize] < camera width, a pixel-skip
-/// step is applied: only every `step`-th pixel in each dimension is sampled.
-/// This reduces the loop iteration count by `step²`, trading image quality
-/// for significant CPU savings in the hot path.
 img.Image _convertYUV420(FramePreprocessInput input) {
-  // Determine sampling step so the output image is approximately
-  // preprocessSize × (preprocessSize * height/width) pixels.
   final int step = (input.width / input.preprocessSize).ceil().clamp(1, 4);
 
   final int outW = (input.width / step).ceil();
@@ -150,8 +98,6 @@ img.Image _convertYUV420(FramePreprocessInput input) {
   return result;
 }
 
-/// Resizes [image] to [inputSize] × [inputSize] and returns a flat
-/// [Float32List] normalised to `[0, 1]` in HWC order.
 Float32List _imageToFloat32(img.Image image, int inputSize) {
   final resized = img.copyResize(
     image,

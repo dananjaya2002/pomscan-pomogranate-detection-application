@@ -1,4 +1,3 @@
-/// Animated splash / loading screen shown on app launch.
 library;
 
 import 'package:flutter/material.dart';
@@ -100,7 +99,6 @@ class _SplashPageState extends State<SplashPage>
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          // Subtle radial glow in the center
           Center(
             child: Container(
               width: 280,
@@ -116,13 +114,10 @@ class _SplashPageState extends State<SplashPage>
               ),
             ),
           ),
-
-          // Centered content
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // App icon
                 FadeTransition(
                   opacity: _iconFade,
                   child: ScaleTransition(
@@ -174,10 +169,7 @@ class _SplashPageState extends State<SplashPage>
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 28),
-
-                // App name
                 SlideTransition(
                   position: _titleSlide,
                   child: FadeTransition(
@@ -193,10 +185,7 @@ class _SplashPageState extends State<SplashPage>
                     ),
                   ),
                 ),
-
                 const SizedBox(height: 8),
-
-                // Tagline
                 FadeTransition(
                   opacity: _taglineFade,
                   child: const Text(
@@ -212,8 +201,6 @@ class _SplashPageState extends State<SplashPage>
               ],
             ),
           ),
-
-          // Bottom progress bar
           Positioned(
             bottom: 48,
             left: 40,

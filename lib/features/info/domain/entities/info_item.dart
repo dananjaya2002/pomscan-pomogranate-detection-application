@@ -1,4 +1,3 @@
-/// Shared domain entity for knowledge-base content items.
 library;
 
 enum InfoType { diseases, plantation, harvesting }
@@ -42,8 +41,6 @@ final class InfoItem {
   final String icon;
   final String description;
 
-  /// For diseases: 'severity + cause + symptoms + treatment + prevention'.
-  /// For others: 'indicator' field.
   final Map<String, dynamic> details;
   final List<String> tips;
 
@@ -54,7 +51,6 @@ final class InfoItem {
       tips.addAll(rawTips.cast<String>());
     }
 
-    // Build a generic details map from whatever keys are present
     final details = <String, dynamic>{};
     for (final key in [
       'severity',
@@ -71,9 +67,6 @@ final class InfoItem {
       id: json['id'] as String,
       title: json['name'] as String? ?? json['title'] as String,
       icon: json['icon'] as String? ?? '📄',
-      // 'description' key is optional — fall back to 'symptoms', 'cause', or
-      // empty string so disease/plantation/harvesting JSON missing the field
-      // does not throw a type-cast error at runtime.
       description: json['description'] as String? ??
           json['symptoms'] as String? ??
           json['cause'] as String? ??

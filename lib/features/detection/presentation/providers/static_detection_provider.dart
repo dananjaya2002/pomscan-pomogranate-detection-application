@@ -1,4 +1,3 @@
-/// Riverpod providers for static-image ripeness detection.
 library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +13,6 @@ final staticModelDataSourceProvider = Provider<ModelDataSource>((ref) {
   );
 });
 
-/// Initialises the static-image model (float32) on demand.
 final staticModelInitProvider = FutureProvider<void>((ref) async {
   final model = ref.read(staticModelDataSourceProvider);
   await model.initialise();

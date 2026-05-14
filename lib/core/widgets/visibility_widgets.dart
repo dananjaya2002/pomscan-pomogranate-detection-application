@@ -1,10 +1,8 @@
-/// Status message widget for contextual feedback during detection processing.
 library;
 
 import 'package:flutter/material.dart';
 import '../../../../core/theme/app_theme.dart';
 
-/// Widget that displays a contextual status message with icon and description.
 class ProcessingStatusOverlay extends StatelessWidget {
   const ProcessingStatusOverlay({
     super.key,
@@ -13,13 +11,10 @@ class ProcessingStatusOverlay extends StatelessWidget {
     this.description,
   });
 
-  /// Current processing status: 'loading', 'processing', 'complete'
   final String status;
 
-  /// Title text to display
   final String statusTitle;
 
-  /// Optional description text below title
   final String? description;
 
   @override
@@ -46,7 +41,6 @@ class ProcessingStatusOverlay extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // Spinner or check icon
           if (isLoading)
             SizedBox(
               width: 40,
@@ -73,7 +67,6 @@ class ProcessingStatusOverlay extends StatelessWidget {
               ),
             ),
           const SizedBox(height: 12),
-          // Status title
           Text(
             statusTitle,
             style: TextStyle(
@@ -83,7 +76,6 @@ class ProcessingStatusOverlay extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          // Optional description
           if (description != null) ...[
             const SizedBox(height: 6),
             Text(
@@ -114,7 +106,6 @@ class ProcessingStatusOverlay extends StatelessWidget {
   }
 }
 
-/// Progress step indicator showing multi-step process.
 class StepProgressIndicator extends StatelessWidget {
   const StepProgressIndicator({
     super.key,
@@ -132,7 +123,6 @@ class StepProgressIndicator extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Progress bar
         ClipRRect(
           borderRadius: BorderRadius.circular(4),
           child: LinearProgressIndicator(
@@ -143,7 +133,6 @@ class StepProgressIndicator extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        // Step text
         Text(
           'Step $currentStep of $totalSteps${stepLabels.isNotEmpty ? ': ${stepLabels[currentStep - 1]}' : ''}',
           style: const TextStyle(
@@ -157,7 +146,6 @@ class StepProgressIndicator extends StatelessWidget {
   }
 }
 
-/// Confidence indicator with farmer-friendly labels.
 class ConfidenceIndicator extends StatelessWidget {
   const ConfidenceIndicator({
     super.key,

@@ -1,12 +1,8 @@
-/// JSON-serialisable DTO that mirrors the [Detection] domain entity.
 library;
 
 import '../../domain/entities/bounding_box.dart';
 import '../../domain/entities/detection.dart';
 
-/// Data-model representation of a detection result.
-///
-/// Used at the data layer to decouple model output parsing from the domain.
 final class DetectionModel {
   const DetectionModel({
     required this.x1,
@@ -26,7 +22,6 @@ final class DetectionModel {
   final double confidence;
   final int classIndex;
 
-  /// Converts this model to the domain [Detection] entity.
   Detection toEntity() => Detection(
         box: BoundingBox(x1: x1, y1: y1, x2: x2, y2: y2),
         label: label,
