@@ -45,22 +45,22 @@ Prerequisites
 Setup
 
 1. Clone the repository:
-
+```bash
 	git clone <repo-url>
 	cd flutter_application_1
-
+```
 2. Install dependencies:
-
+```bash
 	flutter pub get
-
+```
 3. Run on a connected device or emulator:
-
+```bash
 	flutter run
-
+```
 4. Build a release APK (Android):
-
+```bash
 	flutter build apk --release
-
+```
 ## Usage
 
 - Launch the app and grant camera/storage permissions when prompted.
@@ -71,22 +71,26 @@ Setup
 ## Testing
 
 - Run unit and widget tests:
-
-  flutter test
-
-- Run integration tests (example):
-
-  flutter drive --driver=test_driver/integration_test.dart --target=integration_test/app_launch_integration_test.dart
-
+```bash
+  flutter test test/unit 
+```
+- Run integration tests:
+```bash
+  flutter test integration_test  
+```
 Refer to the `integration_test/` directory for test examples.
 
+- Run system tests:
+```bash
+  flutter test test/system 
+```  
 ## Contributing
 
 Contributions, bug reports, and feature requests are welcome. Please open an issue first to discuss larger changes, then submit a pull request with a clear description and tests where applicable.
 
 ## License & Contact
 
-This project is delivered as part of an academic final year project. Add a `LICENSE` file to specify license terms (e.g., MIT) if you wish to release it publicly.
+This project is delivered as part of an academic final year project.
 
 For questions or collaboration, contact the project owner or open an issue in this repository.
 
@@ -99,4 +103,3 @@ Project structure highlights:
 - `assets/content/` — JSON content used by the UI
 - `integration_test/` — end-to-end tests
 
-See [README.md](README.md) for this document.
