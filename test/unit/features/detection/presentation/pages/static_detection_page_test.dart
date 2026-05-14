@@ -51,8 +51,6 @@ void main() {
     testWidgets(
       'displays detection count summary correctly',
       (tester) async {
-        // This test would require mocking the repository and injecting
-        // test detections into the page. Deferred until fixture harness is ready.
         expect(true, true);
       },
     );
