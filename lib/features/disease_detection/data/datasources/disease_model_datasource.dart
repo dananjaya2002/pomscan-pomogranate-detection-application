@@ -1,8 +1,3 @@
-/// TFLite disease classification model data source.
-///
-/// Loads [AppConstants.diseaseModelAssetPath] (a 5-class image classifier)
-/// and exposes a single [runInference] method that returns raw class
-/// probabilities as a [List<double>] of length [AppConstants.diseaseNumClasses].
 library;
 
 import 'dart:io';
@@ -23,24 +18,18 @@ final class DiseaseModelDataSource {
   bool _isInitialised = false;
   String _activeDelegate = 'CPU';
 
-  /// Actual spatial input size read from the model tensor (default 224).
   int _inputSize = AppConstants.diseaseInputSize;
 
   bool get isInitialised => _isInitialised;
   String get activeDelegate => _activeDelegate;
 
-  /// Spatial size the model expects (width == height).
   int get inputSize => _inputSize;
-
-  // ── Initialisation ────────────────────────────────────────────────────────
 
   Future<void> initialise() async {
     if (_isInitialised) return;
 
     final threads = (Platform.numberOfProcessors - 1).clamp(2, 4);
 
-    // iOS: attempt CoreML delegate; Android: CPU baseline only (see
-    // detection ModelDataSource for rationale on skipping GPU/NNAPI).
     final delegatesToTry = <_DelegateTier>[
       if (Platform.isIOS)
         _DelegateTier(name: 'CoreML', build: () => CoreMlDelegate()),
@@ -66,7 +55,6 @@ final class DiseaseModelDataSource {
       }
     }
 
-    // CPU baseline — always supported.
     try {
       final options = InterpreterOptions()..threads = threads;
       _interpreter = await Interpreter.fromAsset(
@@ -87,7 +75,7 @@ final class DiseaseModelDataSource {
   void _logReady(int threads) {
     final inputShape = _interpreter!.getInputTensor(0).shape;
     final outputShape = _interpreter!.getOutputTensor(0).shape;
-    // inputShape = [1, H, W, 3]
+
     _inputSize = inputShape[1];
     _log.i(
       'Disease model ready [$_activeDelegate] — '
@@ -95,15 +83,6 @@ final class DiseaseModelDataSource {
     );
   }
 
-  // ── Inference ─────────────────────────────────────────────────────────────
-
-  /// Runs the classifier forward pass.
-  ///
-  /// [inputBuffer] — flat [Float32List] of shape
-  ///   `[1 × inputSize × inputSize × 3]` normalised to [0, 1].
-  ///
-  /// Returns raw output logits / probabilities as `List<double>` of length
-  ///   [AppConstants.diseaseNumClasses].
   Future<List<double>> runInference(Float32List inputBuffer) async {
     if (!_isInitialised || _interpreter == null) {
       throw StateError(
@@ -127,8 +106,6 @@ final class DiseaseModelDataSource {
     _isInitialised = false;
   }
 }
-
-// ── Internal helper ───────────────────────────────────────────────────────────
 
 final class _DelegateTier {
   const _DelegateTier({required this.name, required this.build});

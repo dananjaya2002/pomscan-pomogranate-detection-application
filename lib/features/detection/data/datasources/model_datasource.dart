@@ -1,8 +1,3 @@
-/// TFLite detection model data source.
-///
-/// Follows the same basic pattern as the disease model datasource:
-/// lazy initialise, read tensor size from the model, run inference on a flat
-/// Float32 buffer, and dispose the interpreter when done.
 library;
 
 import 'dart:io';

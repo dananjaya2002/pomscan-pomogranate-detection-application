@@ -1,4 +1,3 @@
-/// Persists [AppSettings] to [SharedPreferences].
 library;
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +17,6 @@ abstract final class _Keys {
 final class SettingsRepository {
   const SettingsRepository();
 
-  /// Loads persisted settings, falling back to defaults if not yet saved.
   Future<AppSettings> load() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -61,7 +59,6 @@ final class SettingsRepository {
     );
   }
 
-  /// Persists all settings fields.
   Future<void> save(AppSettings settings) async {
     final prefs = await SharedPreferences.getInstance();
     await Future.wait([

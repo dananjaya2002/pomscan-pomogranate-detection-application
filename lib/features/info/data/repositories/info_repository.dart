@@ -1,4 +1,3 @@
-/// Loads knowledge-base JSON content from Flutter asset bundle.
 library;
 
 import 'dart:convert';

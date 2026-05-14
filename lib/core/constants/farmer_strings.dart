@@ -1,19 +1,9 @@
-/// Farmer-friendly UI strings for the PomeScan application.
-///
-/// These strings are designed for agricultural workers with varying tech literacy.
-/// Principles:
-/// - Use simple, direct language (8th grade reading level)
-/// - Avoid ML jargon: no "inference", "tensor", "model", "classifier"
-/// - Use action-oriented phrasing
-/// - Include examples and guidance
 library;
 
 abstract final class FarmerStrings {
-  // ── General ────────────────────────────────────────────────────────────────
   static const String appName = 'PomeScan';
   static const String appSubtitle = 'Check your pomegranates in seconds';
 
-  // ── Ripeness Detection ─────────────────────────────────────────────────────
   static const String ripeScanTitle = 'Scan for Ripeness';
   static const String ripeScanDescription =
       'Find ripe, semi-ripe, and unripe fruits from one photo';
@@ -25,7 +15,6 @@ abstract final class FarmerStrings {
   static const String selectImageButton = 'Pick a Photo';
   static const String takePhotoButton = 'Take Photo';
 
-  // ── Processing Status ──────────────────────────────────────────────────────
   static const String statusPreparing = '📸 Getting ready...';
   static const String statusAnalyzing = '⏳ Analyzing pomegranates...';
   static const String statusProcessing = '⏳ Processing...';
@@ -35,7 +24,6 @@ abstract final class FarmerStrings {
 
   static const String tipAnalysisTime = 'This usually takes 2-3 seconds.';
 
-  // ── Results - Ripeness ─────────────────────────────────────────────────────
   static const String resultsTitle = 'Ripeness Results';
   static const String ripeLabel = 'Ripe';
   static const String semiRipeLabel = 'Semi-ripe';
@@ -59,7 +47,6 @@ abstract final class FarmerStrings {
   static const String noFruitDetected =
       '😞 No pomegranates found in this photo. Try a different angle or better lighting.';
 
-  // ── Confidence Levels ──────────────────────────────────────────────────────
   static const String confidenceVeryHigh = 'Very confident ✓';
   static const String confidenceHigh = 'Fairly sure ⚡';
   static const String confidenceMedium = 'Somewhat sure';
@@ -72,7 +59,6 @@ abstract final class FarmerStrings {
     return confidenceLow;
   }
 
-  // ── Disease Detection ──────────────────────────────────────────────────────
   static const String diseaseCheckTitle = 'Check for Disease';
   static const String diseaseCheckDescription =
       'Identify common pomegranate diseases from a leaf or fruit photo';
@@ -90,7 +76,6 @@ abstract final class FarmerStrings {
   static const String viewTreatmentGuide = 'Learn How to Treat';
   static const String treatmentInstructions = 'Treatment Options';
 
-  // ── Errors - Image Related ─────────────────────────────────────────────────
   static const String errorImageInvalid =
       '❌ This image couldn\'t be read. Try a JPG or PNG photo.';
   static const String errorImageEmpty =
@@ -100,7 +85,6 @@ abstract final class FarmerStrings {
   static const String errorImageDecode =
       '❌ Couldn\'t read this image. Try another photo.';
 
-  // ── Errors - Model/Processing ─────────────────────────────────────────────
   static const String errorProcessing =
       '❌ Something went wrong during scanning. Please try again.';
   static const String errorModelNotReady =
@@ -116,7 +100,6 @@ abstract final class FarmerStrings {
   static const String errorSuggestionRetry =
       'Tap "Try Again" to scan another photo.';
 
-  // ── Errors - Permission ────────────────────────────────────────────────────
   static const String permissionCameraTitle = 'Camera Permission';
   static const String permissionCameraMessage =
       'We need camera access to take photos of your pomegranates. This is only used on your phone.';
@@ -124,7 +107,6 @@ abstract final class FarmerStrings {
   static const String permissionGalleryMessage =
       'We need permission to access your photos. This is only used to find pomegranate photos.';
 
-  // ── Knowledge Base ─────────────────────────────────────────────────────────
   static const String learnDiseases = 'Learn About Diseases';
   static const String learnPlantation = 'Plantation Tips';
   static const String learnHarvesting = 'Harvest Guide';
@@ -136,7 +118,6 @@ abstract final class FarmerStrings {
   static const String harvestingExplanation =
       'When and how to harvest pomegranates at peak ripeness.';
 
-  // ── Settings / About ───────────────────────────────────────────────────────
   static const String settingsTitle = 'Settings';
   static const String aboutTitle = 'About PomeScan';
   static const String helpTitle = 'Help & Tips';
@@ -145,7 +126,6 @@ abstract final class FarmerStrings {
       'PomeScan helps you check pomegranate ripeness and spot diseases quickly. Made for farmers.';
   static const String aboutVersion = 'Version';
 
-  // ── Guidance & Tips ────────────────────────────────────────────────────────
   static const String tipPhotoQuality =
       '💡 Tip: Better photos = better results';
   static const String tipDaylight = '💡 Tip: Scan in daylight or good lighting';
@@ -155,7 +135,6 @@ abstract final class FarmerStrings {
   static const String tipClearView =
       '💡 Tip: Show the fruit clearly, not the whole tree';
 
-  // ── Navigation & Actions ───────────────────────────────────────────────────
   static const String backButton = 'Back';
   static const String homeButton = 'Home';
   static const String nextButton = 'Next';
@@ -163,7 +142,6 @@ abstract final class FarmerStrings {
   static const String closeButton = 'Close';
   static const String doneButton = 'Done';
 
-  // ── Onboarding ─────────────────────────────────────────────────────────────
   static const String onboardingTitle = 'Welcome to PomeScan!';
   static const String onboardingStep1Title = '📸 Scan for Ripeness';
   static const String onboardingStep1Description =

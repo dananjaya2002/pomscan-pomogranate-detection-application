@@ -1,6 +1,3 @@
-/// Concrete implementation of [DetectionRepository].
-///
-/// Orchestrates [CameraDataSource]  [ModelDataSource].
 library;
 
 import 'dart:async';
@@ -31,8 +28,6 @@ final class DetectionRepositoryImpl implements DetectionRepository {
   @override
   Future<void> dispose() => _model.dispose();
 
-  //  Camera frame inference
-
   @override
   Future<List<Detection>> detect(
     CameraImage frame, {
@@ -57,7 +52,6 @@ final class DetectionRepositoryImpl implements DetectionRepository {
       bgraBytes: isBgra ? frame.planes[0].bytes : null,
     );
 
-    // Offload heavy YUV→RGB conversion + resize to a background isolate.
     final inputBuffer = await compute(preprocessCameraFrame, input).timeout(
       const Duration(milliseconds: 500),
     );
@@ -73,8 +67,6 @@ final class DetectionRepositoryImpl implements DetectionRepository {
       outputCols: _model.outputCols,
     );
   }
-
-  //  Static image inference
 
   @override
   Future<List<Detection>> detectOnImage(
@@ -113,12 +105,6 @@ final class DetectionRepositoryImpl implements DetectionRepository {
     );
   }
 
-  //  Preprocessing
-
-  // Camera frame preprocessing is now handled by [preprocessCameraFrame] in
-  // frame_preprocessor.dart, which runs via compute() in a background isolate.
-
-  /// Decodes raw image bytes (JPEG/PNG) to a normalised Float32List.
   _StaticPreprocessResult _preprocessImageBytes(Uint8List bytes) {
     try {
       final image = img.decodeImage(bytes);
@@ -135,8 +121,6 @@ final class DetectionRepositoryImpl implements DetectionRepository {
     }
   }
 
-  /// Letterboxes [image] into a square [modelInputSize] canvas and returns a
-  /// normalised Float32 tensor plus geometric metadata for reverse mapping.
   _StaticPreprocessResult _imageToFloat32Letterbox(
     img.Image image,
     int modelInputSize,
@@ -187,13 +171,6 @@ final class DetectionRepositoryImpl implements DetectionRepository {
     );
   }
 
-  //  YOLO26 output decoding
-
-  /// Decodes the YOLO26 output tensor.
-  ///
-  /// [output] has shape [rows][anchors]:
-  ///   - rows 0-3 : cx, cy, w, h in [0, inputSize] pixel space
-  ///   - rows 4.. : class scores
   List<Detection> _parseYoloOutput(
     List<List<double>> output,
     double confidenceThreshold,
@@ -277,7 +254,7 @@ final class DetectionRepositoryImpl implements DetectionRepository {
       }
 
       candidates.sort((a, b) => b.confidence.compareTo(a.confidence));
-      // Model-exported NMS has already filtered overlaps.
+
       return candidates.take(maxDetections).toList();
     }
 
@@ -285,9 +262,6 @@ final class DetectionRepositoryImpl implements DetectionRepository {
       var maxScore = 0.0;
       var classIdx = 0;
 
-      // Use class confidence as primary ranking signal. Objectness (when
-      // present) is reserved for future tuning because multiplying it here
-      // can over-suppress valid detections for some exports.
       final objectness =
           view.hasObjectness ? _toUnitScore(view.valueAt(4, i)) : 1.0;
 
@@ -341,8 +315,6 @@ final class DetectionRepositoryImpl implements DetectionRepository {
         .take(maxDetections)
         .toList();
   }
-
-  //  Non-Maximum Suppression
 
   List<Detection> _nms(List<Detection> boxes, double iouThreshold) {
     final result = <Detection>[];
@@ -482,8 +454,6 @@ final class _YoloTensorView {
     final rows = output.length;
     final cols = output.first.length;
 
-    // NMS-baked export format: [x1, y1, x2, y2, confidence, class_id]
-    // Either [6, N] (feature-major) or [N, 6] (anchor-major).
     if (rows == 6 && cols > 0) {
       return _YoloTensorView._(
         data: output,

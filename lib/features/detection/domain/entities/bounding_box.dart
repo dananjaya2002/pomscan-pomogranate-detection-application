@@ -1,10 +1,7 @@
-/// Domain entity: an axis-aligned bounding box in normalised image coordinates.
 library;
 
 import 'package:equatable/equatable.dart';
 
-/// All coordinates are normalised to `[0.0, 1.0]` relative to the
-/// model input size ([AppConstants.inputSize] × [AppConstants.inputSize]).
 final class BoundingBox extends Equatable {
   const BoundingBox({
     required this.x1,
@@ -13,16 +10,12 @@ final class BoundingBox extends Equatable {
     required this.y2,
   });
 
-  /// Left edge (normalised).
   final double x1;
 
-  /// Top edge (normalised).
   final double y1;
 
-  /// Right edge (normalised).
   final double x2;
 
-  /// Bottom edge (normalised).
   final double y2;
 
   double get width => x2 - x1;

@@ -1,4 +1,3 @@
-/// Shared action button used across hero cards for visual consistency.
 library;
 
 import 'package:flutter/material.dart';

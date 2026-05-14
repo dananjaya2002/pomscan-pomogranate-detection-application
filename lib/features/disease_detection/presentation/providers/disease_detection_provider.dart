@@ -1,4 +1,3 @@
-/// Riverpod providers for the disease classification pipeline.
 library;
 
 import 'dart:io';
@@ -11,8 +10,6 @@ import '../../data/datasources/disease_model_datasource.dart';
 import '../../data/repositories/disease_detection_repository_impl.dart';
 import '../../domain/entities/disease_result.dart';
 import '../../domain/usecases/run_disease_detection_usecase.dart';
-
-// ── Infrastructure providers ──────────────────────────────────────────────────
 
 final _diseaseModelDataSourceProvider = Provider<DiseaseModelDataSource>(
   (_) => DiseaseModelDataSource(),
@@ -28,16 +25,10 @@ final runDiseaseDetectionUseCaseProvider = Provider<RunDiseaseDetectionUseCase>(
   (ref) => RunDiseaseDetectionUseCase(ref.watch(_diseaseRepositoryProvider)),
 );
 
-// ── Model initialisation ──────────────────────────────────────────────────────
-
-/// Resolves once the disease TFLite model is fully loaded and tensors
-/// are allocated.  Watch on the home screen to show a readiness chip.
 final diseaseModelInitProvider = FutureProvider<void>((ref) async {
   final repo = ref.watch(_diseaseRepositoryProvider);
   await repo.initialise();
 });
-
-// ── Detection state ───────────────────────────────────────────────────────────
 
 @immutable
 final class DiseaseDetectionState {
@@ -68,8 +59,6 @@ final class DiseaseDetectionState {
         errorMessage: clearError ? null : errorMessage ?? this.errorMessage,
       );
 }
-
-// ── Notifier ──────────────────────────────────────────────────────────────────
 
 final class DiseaseDetectionNotifier
     extends StateNotifier<DiseaseDetectionState> {

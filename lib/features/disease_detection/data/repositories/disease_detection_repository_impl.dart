@@ -1,7 +1,3 @@
-/// Concrete implementation of [DiseaseDetectionRepository].
-///
-/// Decodes image bytes, resizes to the model's expected input size,
-/// normalises to [0, 1], runs inference, then argmax-decodes the output.
 library;
 
 import 'dart:typed_data';
@@ -34,8 +30,6 @@ final class DiseaseDetectionRepositoryImpl
     return _parseOutput(probabilities);
   }
 
-  // ── Preprocessing ──────────────────────────────────────────────────────────
-
   Float32List _preprocessImageBytes(Uint8List bytes) {
     final image = img.decodeImage(bytes);
     if (image == null) throw StateError('Could not decode image bytes');
@@ -62,8 +56,6 @@ final class DiseaseDetectionRepositoryImpl
     }
     return buffer;
   }
-
-  // ── Output parsing ─────────────────────────────────────────────────────────
 
   DiseaseResult _parseOutput(List<double> probabilities) {
     var maxScore = 0.0;

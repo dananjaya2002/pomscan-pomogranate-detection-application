@@ -1,15 +1,11 @@
-/// Error and validation helpers for the detection screens.
-/// Provides user-friendly error handling and input validation.
 library;
 
 import 'package:flutter/material.dart';
 import '../../../../core/constants/farmer_strings.dart';
 import '../../../../core/theme/app_theme.dart';
 
-/// Validates image file and provides feedback.
-/// Returns error message if invalid, null if valid.
 String? validateImageFile(int fileSize) {
-  const maxFileSizeBytes = 5 * 1024 * 1024; // 5MB
+  const maxFileSizeBytes = 5 * 1024 * 1024;
 
   if (fileSize == 0) {
     return FarmerStrings.errorImageEmpty;
@@ -19,10 +15,9 @@ String? validateImageFile(int fileSize) {
     return FarmerStrings.errorImageLarge;
   }
 
-  return null; // Valid
+  return null;
 }
 
-/// Converts exception to farmer-friendly error message.
 String getFriendlyErrorMessage(dynamic exception) {
   final errorString = '$exception'.toLowerCase();
 
@@ -49,11 +44,9 @@ String getFriendlyErrorMessage(dynamic exception) {
     return FarmerStrings.errorModelMissing;
   }
 
-  // Default fallback
   return FarmerStrings.errorGeneral;
 }
 
-/// Widget for displaying an error state with recovery options.
 class ErrorStateWidget extends StatelessWidget {
   const ErrorStateWidget({
     super.key,
@@ -142,7 +135,6 @@ class ErrorStateWidget extends StatelessWidget {
   }
 }
 
-/// Snackbar helper for showing errors with action button.
 void showErrorSnackBar(
   BuildContext context, {
   required String message,
@@ -163,7 +155,6 @@ void showErrorSnackBar(
   );
 }
 
-/// Permission request feedback widget.
 class PermissionRequestCard extends StatelessWidget {
   const PermissionRequestCard({
     super.key,

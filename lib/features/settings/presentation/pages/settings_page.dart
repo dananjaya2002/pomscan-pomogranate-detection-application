@@ -1,4 +1,3 @@
-/// Full-screen settings page.
 library;
 
 import 'package:flutter/material.dart';
@@ -27,7 +26,6 @@ class SettingsPage extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 40),
         children: [
-          // ── Simple mode notice ───────────────────────────────────────────
           _SectionHeader(title: 'Scan Mode'),
           _SettingsCard(
             children: [
@@ -42,8 +40,6 @@ class SettingsPage extends ConsumerWidget {
               ),
             ],
           ),
-
-          // ── Detection Filters ─────────────────────────────────────────────
           _SectionHeader(title: 'Detection Filters'),
           _SettingsCard(
             children: [
@@ -76,8 +72,6 @@ class SettingsPage extends ConsumerWidget {
               ),
             ],
           ),
-
-          // ── About ─────────────────────────────────────────────────────────
           _SectionHeader(title: 'Information'),
           _SettingsCard(
             children: [
@@ -94,7 +88,6 @@ class SettingsPage extends ConsumerWidget {
               _InfoRow(label: 'App Version', value: '1.0.0'),
             ],
           ),
-
           const SizedBox(height: 8),
           Center(
             child: Text(
@@ -107,8 +100,6 @@ class SettingsPage extends ConsumerWidget {
     );
   }
 }
-
-// ── Sub-widgets ───────────────────────────────────────────────────────────────
 
 class _SectionHeader extends StatelessWidget {
   const _SectionHeader({required this.title});
