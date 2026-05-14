@@ -7,19 +7,15 @@ import 'package:pomescan/features/detection/domain/entities/detection.dart';
 void main() {
   group('DetectionRepositoryImpl._parseYoloOutput', () {
     test('handles pre-NMS exported tensor: [6, N] row-major format', () {
-      // Simulate YOLO export with NMS already applied: [x1, y1, x2, y2, confidence, class_id]
-      // Shape: [6, 2] = 2 detections
       final output = [
-        [0.1, 0.3], // x1
-        [0.2, 0.4], // y1
-        [0.5, 0.7], // x2
-        [0.6, 0.8], // y2
-        [0.95, 0.87], // confidence
-        [0.0, 1.0], // class_id
+        [0.1, 0.3],
+        [0.2, 0.4],
+        [0.5, 0.7],
+        [0.6, 0.8],
+        [0.95, 0.87],
+        [0.0, 1.0],
       ];
 
-      // Parse using the private method (tested via public detect method).
-      // For now, we'll validate that the parser recognizes this format.
       expect(output.length, 6);
       expect(output[0].length, 2);
     });
@@ -27,20 +23,18 @@ void main() {
     test(
         'handles YOLO26 raw output: [7, 8400] row-major (cx, cy, w, h + 3 classes)',
         () {
-      // Typical shape for YOLO26 int8 export: 7 rows (4 coords + 3 classes), 8400 anchors
       final output = List.generate(
         7,
         (row) => List<double>.filled(8400, 0.0),
       );
 
-      // Inject a high-confidence detection at anchor 100
-      output[0][100] = 320.0; // cx in pixel space
-      output[1][100] = 320.0; // cy
-      output[2][100] = 100.0; // w
-      output[3][100] = 100.0; // h
-      output[4][100] = 2.0; // ripe score (logit)
-      output[5][100] = -5.0; // semi_ripe score (logit, low)
-      output[6][100] = -5.0; // unripe score (logit, low)
+      output[0][100] = 320.0;
+      output[1][100] = 320.0;
+      output[2][100] = 100.0;
+      output[3][100] = 100.0;
+      output[4][100] = 2.0;
+      output[5][100] = -5.0;
+      output[6][100] = -5.0;
 
       expect(output.length, 7);
       expect(output[0].length, 8400);
@@ -48,7 +42,6 @@ void main() {
     });
 
     test('clamps and normalizes bounding box coordinates to [0, 1]', () {
-      // Simulate coordinates that exceed normalized range
       expect(const BoundingBox(x1: -0.1, y1: 0.2, x2: 1.1, y2: 0.8).x1, -0.1);
       expect(const BoundingBox(x1: 0.1, y1: 0.2, x2: 0.3, y2: 0.4).x1, 0.1);
     });
@@ -69,7 +62,6 @@ void main() {
     test(
       'NMS filters overlapping boxes using IoU threshold',
       () {
-        // Two boxes with high IoU (>0.5 threshold): one should be suppressed
         final detections = [
           Detection(
             box: BoundingBox(x1: 0.0, y1: 0.0, x2: 0.5, y2: 0.5),
@@ -86,25 +78,19 @@ void main() {
         ];
 
         expect(detections.length, 2);
-        // NMS should reduce overlapping predictions
       },
     );
   });
 
   group('DetectionRepositoryImpl letterbox transform', () {
     test('maps letterboxed detection back to original image coordinates', () {
-      // Letterbox: source 640x480 fitted into 640x640 canvas
-      // scale = min(640/640, 640/480) = 0.75
-      // resized: 480x360, padX=80, padY=140
       final scale = 0.75;
       final padX = 80.0;
 
-      // Model prediction at normalized [0.2, 0.2, 0.4, 0.4]
       const modelBox = BoundingBox(x1: 0.2, y1: 0.2, x2: 0.4, y2: 0.4);
 
-      // Reverse: model coords → pixel coords → source coords
-      final modelX1Px = modelBox.x1 * 640; // 128 px
-      final unpadX = (modelX1Px - padX) / scale; // (128 - 80) / 0.75 ≈ 64
+      final modelX1Px = modelBox.x1 * 640;
+      final unpadX = (modelX1Px - padX) / scale;
 
       expect(unpadX, closeTo(64.0, 0.1));
     });
