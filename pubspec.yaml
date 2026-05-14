@@ -9,6 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_launcher_icons: ^0.14.4
 
   cupertino_icons: ^1.0.8
 
@@ -46,3 +47,7 @@ flutter:
     - assets/models/
     - assets/content/
 
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/app_logo.png"
